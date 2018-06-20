@@ -1,0 +1,24 @@
+{
+  "name": "react-easy-input",
+  "version": "1.0.0",
+  "description": "A react input component that has simple validation and masking",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeff-hykin/react-easy-input.git"
+  },
+  "keywords": [
+    "input",
+    "validation",
+    "react"
+  ],
+  "author": "Jeff Hykin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeff-hykin/react-easy-input/issues"
+  },
+  "homepage": "https://github.com/jeff-hykin/react-easy-input#readme"
+}
