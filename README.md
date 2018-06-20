@@ -2,7 +2,7 @@
 A react input component that has simple validation and masking. <br>
 This readme will likely be updated within a week.
 
-
+# What do I use this for?
 ### Use-case 1: a controlled input
 Import with `import {Input} from 'react-easy-input'`<br>
 React-render usage, `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
@@ -20,7 +20,7 @@ Then in any css file in your project put<br>
 
 
 
-# Full Example
+# What does a full example look like?
 Usage within a react component:<br>
 dummyComponent.jsx:<br>
 ```
