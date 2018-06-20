@@ -2,7 +2,7 @@
 A react input component that has simple validation and masking. <br>
 This readme will likely be updated within a week.
 
-# What do I use this for?
+# How am I supposed to use this?
 ### Use-case 1: a controlled input
 Import with `import {Input} from 'react-easy-input'`<br>
 React-render usage, `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
