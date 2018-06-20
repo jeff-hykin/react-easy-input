@@ -1,6 +1,6 @@
 // A class for indicating a value is invalid
 // it is used for input validation
-exports.Invalid = class Invalid {
+class Invalid {
     constructor(value, errorMsg) {
         this.value = value
         this.errorMsg = errorMsg
@@ -12,13 +12,14 @@ exports.Invalid = class Invalid {
         return this.value
     }
 }
-exports.isInvalid = function (value) {
+var isInvalid = function (value) {
     if (typeof value == "object" && value instanceof Invalid) {
         return true
     }
     return false
 }
-
+module.exports.Invalid = Invalid
+module.exports.isInvalid = isInvalid
 module.exports.converters = {
     bool: {
         stateToUserConverter: (shouldBeBool) => {

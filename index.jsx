@@ -1,3 +1,4 @@
+var React = require("react")
 var dependencies = require("./converters")
 
 var converters = dependencies.converters
@@ -17,18 +18,35 @@ HandleChange = (thisFromComponent, stateAttribute, userInputToStateConverter=nul
         newValue = userInputToStateConverter(newValue)
     }
     eval("copyOfState."+stateAttribute+" = newValue")
-    // if the Attribute is not nested 
+    // if the Attribute is not nested
     // update the compoenent state once with the new state
     thisFromComponent.setState(copyOfState)
 };
 
+function retrieveKeyValueNoExceptions (object, nested_element, fail_value = "") {
+    var output = fail_value
+    try { output = eval("object" + nested_element) } catch (e) { }
+    return output
+}
 
-module.exports.Input = function({linkTo, className="input-box", classAdd="", ...otherProps}) 
+
+module.exports.Input = function(props) 
     {
+        var otherProps = {}
+        for (var each of Object.keys(props)) {
+            otherProps[each] = props[each]
+        }
+        // extract the needed props
+        var linkTo    = otherProps.linkTo    ? otherProps.linkTo    : null        ; delete otherProps.linkTo
+        var className = otherProps.className ? otherProps.className : "easy-input"; delete otherProps.className
+        var classAdd  = otherProps.classAdd  ? otherProps.classAdd  : ""          ; delete otherProps.classAdd
+        
+        
+        
         // add additional classes
         className = className + " " + classAdd
         // add error class if there is an "invalid" prop
-        className = otherProps.invalid?"input-err "+className : className
+        className = otherProps.invalid?"easy-input-error "+className : className
         
         // 
         // Controlled input
@@ -38,11 +56,12 @@ module.exports.Input = function({linkTo, className="input-box", classAdd="", ...
             var valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state,"."+linkTo)
             if (isInvalid(valueFromState)) {
                 // add error class if the value is invalid
-                className = "input-error "+className
+                className = "easy-input-error "+className
             }
             // retrieve converters
-            var stateToUserConverter      = retrieveKeyValueNoExceptions(converters,"['"+otherProps.type+"'].stateToUserConverter")
-            var userInputToStateConverter = retrieveKeyValueNoExceptions(converters,"['"+otherProps.type+"'].userInputToStateConverter")
+            var converter                  = otherProps.type              in converters ? converters[otherProps.type]         : {}
+            var stateToUserConverter       = 'stateToUserConverter'       in converter  ? converter.stateToUserConverter      : null
+            var userInputToStateConverter  = 'userInputToStateConverter'  in converter  ? converter.userInputToStateConverter : null
             // convert the display value if needed
             if (stateToUserConverter) {
                 valueFromState = stateToUserConverter(valueFromState)
@@ -51,7 +70,11 @@ module.exports.Input = function({linkTo, className="input-box", classAdd="", ...
             if (valueFromState == null) {
                 valueFromState = ""
             }
-            return <input value={valueFromState} onChange={HandleChange(otherProps.this, linkTo, userInputToStateConverter)} className={className}  {...otherProps} />
+            // attach default props
+            otherProps.value     = otherProps.value? otherProps.value         : valueFromState
+            otherProps.onChange  = otherProps.onChange? otherProps.onChange   : HandleChange(otherProps.this, linkTo, userInputToStateConverter),  
+            otherProps.className = otherProps.className? otherProps.className : className
+            return React.createElement('input', otherProps, null)
         }
         
         // 
@@ -61,9 +84,10 @@ module.exports.Input = function({linkTo, className="input-box", classAdd="", ...
         // if there is a value, and if it is invalid
         if (isInvalid(otherProps.value)) {
             // add error class if the value is invalid
-            className = "input-error "+className
+            className = "easy-input-error "+className
             
         }
-        
-        return <input className={className} {...otherProps} />
+        // attach default props
+        otherProps.className = otherProps.className? otherProps.className : className
+        return React.createElement('input', otherProps, null)
     }
