@@ -1,6 +1,6 @@
 # React-Easy-Input
-A react input component that has simple validation and masking
-This readme will likely be updated within a week
+A react input component that has simple validation and masking. <br>
+This readme will likely be updated within a week.
 
 
 # Usage
