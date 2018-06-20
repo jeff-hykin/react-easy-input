@@ -1,7 +1,12 @@
-import converters, {Invalid, isInvalid} from 'converters'
+var dependencies = require("./converters")
 
-export var isInvalid = isInvalid
-export var Invalid = Invalid
+var converters = dependencies.converters
+var Invalid = dependencies.Invalid
+var isInvalid = dependencies.isInvalid
+module.exports.converters = converters
+module.exports.Invalid = Invalid
+module.exports.isInvalid = isInvalid
+
 
 HandleChange = (thisFromComponent, stateAttribute, userInputToStateConverter=null) => event => {
     // create a copy of state instead of mutating the original
@@ -18,7 +23,7 @@ HandleChange = (thisFromComponent, stateAttribute, userInputToStateConverter=nul
 };
 
 
-export default Input = function({linkTo, className="input-box", classAdd="", ...otherProps}) 
+module.exports.Input = function({linkTo, className="input-box", classAdd="", ...otherProps}) 
     {
         // add additional classes
         className = className + " " + classAdd
