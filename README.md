@@ -20,7 +20,9 @@ Then in any css file in your project put<br>
 
 
 
-Example usage within a react component:
+# Full Example
+Usage within a react component:
+dummyComponent.jsx:<br>
 ```
 import React from 'react'
 import {Input, isInvalid} from 'react-easy-input'
