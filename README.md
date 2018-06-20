@@ -21,7 +21,7 @@ Then in any css file in your project put<br>
 
 
 # Full Example
-Usage within a react component:
+Usage within a react component:<br>
 dummyComponent.jsx:<br>
 ```
 import React from 'react'
