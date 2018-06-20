@@ -1,8 +1,8 @@
 {
   "name": "react-easy-input",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A react input component that has simple validation and masking",
-  "main": "index.js",
+  "main": "index.jsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
