@@ -32,7 +32,7 @@ class dummyComponent extends React.Component {
             <h1>Hello World</h1>
             <div>What's you name?</div>
             <Input this={this} linkTo="name"/>
-            <button onClick={this.onSubmit} >
+            <button onClick={this.onSubmit} />
         </div>
     }
 }
