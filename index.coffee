@@ -2,9 +2,9 @@ React = require("react")
 dependencies = require("./converters")
 
 # re-exports
-converters = dependencies.converters ; module.exports.converters = converters
-Invalid    = dependencies.Invalid    ; module.exports.Invalid    = Invalid
-isInvalid  = dependencies.isInvalid  ; module.exports.isInvalid  = isInvalid
+converters = dependencies.converters then module.exports.converters = converters
+Invalid    = dependencies.Invalid    then module.exports.Invalid    = Invalid
+isInvalid  = dependencies.isInvalid  then module.exports.isInvalid  = isInvalid
 
 
 HandleChange = (thisFromComponent, stateAttribute, inputer=null) => event =>
@@ -32,9 +32,9 @@ module.exports.Input = (props) ->
             otherProps[each] = props[each]
         
         # extract the needed props
-        linkTo      = null         ; linkTo    = otherProps.linkTo    if otherProps.linkTo    ; delete otherProps.linkTo
-        className   = "easy-input" ; className = otherProps.className if otherProps.className ; delete otherProps.className
-        classAdd    = ""           ; classAdd  = otherProps.classAdd  if otherProps.classAdd  ; delete otherProps.classAdd
+        linkTo      = null         then linkTo    = otherProps.linkTo    if otherProps.linkTo    then delete otherProps.linkTo
+        className   = "easy-input" then className = otherProps.className if otherProps.className then delete otherProps.className
+        classAdd    = ""           then classAdd  = otherProps.classAdd  if otherProps.classAdd  then delete otherProps.classAdd
 
         # add additional classes
         className = className + " " + classAdd
@@ -52,9 +52,9 @@ module.exports.Input = (props) ->
             className = "easy-input-error "+className if isInvalid valueFromState
             
             # retrieve converters
-            converter = {}  ; converter = converters[otherProps.type] if otherProps.type in converters
-            outputer  = null; outputer  = converter.outputer          if 'outputer'      in converter 
-            inputer   = null; inputer   = converter.inputer           if 'inputer'       in converter 
+            converter = {}   then converter = converters[otherProps.type] if otherProps.type in converters
+            outputer  = null then outputer  = converter.outputer          if 'outputer'      in converter 
+            inputer   = null then inputer   = converter.inputer           if 'inputer'       in converter 
             
             # convert the display value if needed
             valueFromState = outputer(valueFromState) if outputer
@@ -63,9 +63,9 @@ module.exports.Input = (props) ->
             valueFromState = "" if valueFromState is null or valueFromState is undefined
             
             # attach default props
-            otherProps.value     = valueFromState                                  ; otherProps.value     = otherProps.value     if otherProps.value     
-            otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer)  ; otherProps.onChange  = otherProps.onChange  if otherProps.onChange  
-            otherProps.className = className                                       ; otherProps.className = otherProps.className if otherProps.className 
+            otherProps.value     = valueFromState                                 then otherProps.value     = otherProps.value     if otherProps.value     
+            otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer) then otherProps.onChange  = otherProps.onChange  if otherProps.onChange  
+            otherProps.className = className                                      then otherProps.className = otherProps.className if otherProps.className 
             return React.createElement('input', otherProps, null)
         
         # 
