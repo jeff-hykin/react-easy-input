@@ -75,11 +75,10 @@ The function should
 3. return new Invalid(userInput) when invalid
 <br>
 Then in the render function put 
-
 ```html
 <Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>
 ```
-<br> And if you'd like to display an error message, you can add this to render <br>
+And if you'd like to display an error message, you can add this to render
 ```jsx
 { isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }
 ```
@@ -106,7 +105,8 @@ class dummyComponent extends React.Component {
             return userInput
         }
         // else
-        return new Invalid(userInput, "Needs to be >10 charaters include a number, uppercase letter, and lowercase letter")
+        let errMsg = "Needs to be >10 charaters include a number, uppercase letter, and lowercase letter"
+        return new Invalid(userInput, errMsg)
     }
     
     onSubmit = () => {
