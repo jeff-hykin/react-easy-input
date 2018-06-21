@@ -1,27 +1,9 @@
 # A class for indicating a value is invalid
 # it is used for input validation
-class Invalid 
-    constructor: (value, errorMsg) ->
-        valueCopy = value
-        # unwrap any invalid values
-        while (valueCopy instanceof Invalid) 
-            valueCopy = valueCopy.value
-        this[Symbol.toPrimitive] = (hint) ->
-            return this.value
-        this.value    = valueCopy
-        this.errorMsg = errorMsg
-    
-    valueOf:  () => this.value
-    toString: () => this.value
-    
-isInvalid = (value) ->
-    if typeof value == "object" and value instanceof Invalid
-        return true
-    else
-        return false
+InvalidModule = require('./Invalid')
+Invalid = InvalidModule.Invalid
+isInvalid = InvalidModule.isInvalid
 
-module.exports.Invalid = Invalid
-module.exports.isInvalid = isInvalid
 module.exports.converters = {
     bool: {
         outputer: (shouldBeBool) => 
