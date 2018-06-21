@@ -54,7 +54,7 @@ Because type="email" is one of the easy-input builtin types, it will automatical
 First Import the tools `import {Input, isInvalid} from 'react-easy-input'`<br>
 Then in the render function put `<Input this={this} linkTo="blah" type="email"/>`<br>
 Now in any other function in your component, you can call `isValid(this.state.blah)` and it will return true/false based on if the input is valid.<br>
-To get return the primitive value of the input (regardless if its valid/invalid) do `this.state.blah.valueOf()`<br>
+To get the primitive value of the input (regardless if its valid/invalid) do `this.state.blah.valueOf()`<br>
 <*> See the "# What does example usage look like?" for an example of this
 ### Use-case 4: custom validator + errorMsg
 First Import the tools `import {Input, Invalid, isInvalid} from 'react-easy-input'`<br>
