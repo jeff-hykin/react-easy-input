@@ -75,6 +75,7 @@ The function should
 3. return new Invalid(userInput) when invalid
 <br>
 Then in the render function put 
+
 ```html
 <Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>
 ```
