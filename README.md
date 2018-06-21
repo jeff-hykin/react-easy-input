@@ -50,13 +50,13 @@ Then in the render function put
 <Input this={this} linkTo="email" type="email" style={{backgroundColor:"blue"}} invalidStyle={{backgroundColor:"red"}}/>
 ```
 Because type="email" is one of the easy-input builtin types, it will automatically validate and switch to the invalidStyle whenever the input isn't an email.
-### Use-case 3: input + checking if valid (most common use case)
+### Use-case 3: checking if valid (most common use case)
 First Import the tools `import {Input, isInvalid} from 'react-easy-input'`<br>
-Then in the render function put `<Input this={this} linkTo="name" type="email"/>`<br>
-Now in any other function in your component, you can call `isValid(this.state.email)` and it will return true/false based on if the input is valid.<br>
-To get the primitive value of the input do `this.state.email.valueOf()`<br>
+Then in the render function put `<Input this={this} linkTo="blah" type="email"/>`<br>
+Now in any other function in your component, you can call `isValid(this.state.blah)` and it will return true/false based on if the input is valid.<br>
+To get return the primitive value of the input (regardless if its valid/invalid) do `this.state.blah.valueOf()`<br>
 <*> See the "# What does example usage look like?" for an example of this
-### Use-case 4: input + custom validator + errorMsg
+### Use-case 4: custom validator + errorMsg
 First Import the tools `import {Input, Invalid, isInvalid} from 'react-easy-input'`<br>
 Then somewhere in the file, create a function like this
 ```javascript
