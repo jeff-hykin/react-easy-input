@@ -60,7 +60,7 @@ module.exports.Input = (props) ->
             valueFromState = outputer(valueFromState) if outputer
             
             # always convert null values to "" (otherwise react will complain)
-            valueFromState = "" if valueFromState == null
+            valueFromState = "" if valueFromState is null or valueFromState is undefined
             
             # attach default props
             otherProps.value     = valueFromState                                  ; otherProps.value     = otherProps.value     if otherProps.value     
