@@ -2,15 +2,30 @@
 A react input component that has simple validation and masking. <br>
 This readme will likely be updated within a week.
 
+# How am I supposed to use this?
+### Use-case 1: a controlled input
+Import with `import {Input} from 'react-easy-input'`<br>
+React-render usage, `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
+### Use-case 2: a controlled input + styling
+Import with `import {Input} from 'react-easy-input'`<br>
+React-render usage, `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
+Then in any css file in your project put<br>
+```
+.easy-input {
+    background-color: purple;
+}
+```
+### Use-case 3: input + validation
+* yet-to-be-documented *<br>
 
-# Usage
-Basic usage, `<Input this={this} linkTo="name"/>` is enough to bind the input field to this.state.name.
 
 
-Example usage within a react component:
+# What does a full example look like?
+Usage within a react component:<br>
+dummyComponent.jsx:<br>
 ```
 import React from 'react'
-import Input, {isInvalid} from 'react-easy-input'
+import {Input, isInvalid} from 'react-easy-input'
 
 
 class dummyComponent extends React.Component {
