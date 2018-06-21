@@ -67,7 +67,8 @@ function passwordInputer (userInput) {
         return userInput
     } else {
         // return new Invalid obj, if value is Invalid
-        return new Invalid(userInput, "password needs to be 10 characters or more")
+        errMsg = "password needs to be 10 characters or more" // optional
+        return new Invalid(userInput, errMsg)
     }
 ```
 The function should 
