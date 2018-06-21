@@ -1,7 +1,6 @@
 # React-Easy-Input
-A react input component that has simple validation and masking. <br>
-This readme will likely be updated within a week.
-
+A simple react input component that takes 5min to setup, but can also be fully customized to handle any kind of validation <br>
+More documentation will be added within a week.
 
 # What does example usage look like?
 Usage within a react component:<br>
@@ -37,25 +36,27 @@ class dummyComponent extends React.Component {
 export default dummyComponent
 ```
 
+# Installation
+`npm install -s react-easy-input`
 
-# How am I supposed to use this?
-### Use-case 1: basic controlled input
+# How am I supposed to use this? (documentation)
+### Use-case 1: basic input
 Import the component `import {Input} from 'react-easy-input'`<br>
 Then in the render function put `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
-### Use-case 2: input + styling
-Import the component`import {Input} from 'react-easy-input'`<br>
-Then in the render function put`<Input this={this} linkTo="name" style={{backgroundColor:"blue"}} />` this will bind the input field to this.state.name<br>
-### Use-case 3: input + validation styling
+### Use-case 2: styling valid vs invalid
 Import the component `import {Input} from 'react-easy-input'`<br>
-Then in the render function put `<Input this={this} linkTo="email" type="email" invalidStyle={{backgroundColor:"red"}}/>`<br>
+Then in the render function put 
+```jsx
+<Input this={this} linkTo="email" type="email" style={{backgroundColor:"blue"}} invalidStyle={{backgroundColor:"red"}}/>
+```
 Because type="email" is one of the easy-input builtin types, it will automatically validate and switch to the invalidStyle whenever the input isn't an email.
-### Use-case 4: input + checking if valid (most common use case)
+### Use-case 3: input + checking if valid (most common use case)
 First Import the tools `import {Input, isInvalid} from 'react-easy-input'`<br>
 Then in the render function put `<Input this={this} linkTo="name" type="email"/>`<br>
 Now in any other function in your component, you can call `isValid(this.state.email)` and it will return true/false based on if the input is valid.
 To get the value of the input box do `this.state.email.valueOf()`<br>
 <*> See the "# What does example usage look like?" for an example of this
-### Use-case 5: input + custom validator + errorMsg
+### Use-case 4: input + custom validator + errorMsg
 First Import the tools `import {Input, Invalid, isInvalid} from 'react-easy-input'`<br>
 Then somewhere in the file, create a function like this
 ```javascript
@@ -150,7 +151,7 @@ class dummyComponent extends React.Component {
 export default dummyComponent
 ```
 
-### Use-case 6: input + masking + validator
+### Use-case 5: input + masking + validator
 **yet to be documented**<br>
 
 
