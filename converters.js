@@ -27,7 +27,7 @@ module.exports.Invalid = Invalid
 module.exports.isInvalid = isInvalid
 module.exports.converters = {
     bool: {
-        stateValueToUserOutput: (shouldBeBool) => {
+        outputer: (shouldBeBool) => {
             if (shouldBeBool === true) {
                 return "True"
             } else if (shouldBeBool === false) {
@@ -36,7 +36,7 @@ module.exports.converters = {
             // If provided value is not boolean, then return the value itself
             return shouldBeBool
         },
-        userInputToStateValue: (userInput) => {
+        inputer: (userInput) => {
             var userInputLowerCased = userInput.toLowerCase()
             if (userInputLowerCased == "true") {
                 return true
@@ -48,7 +48,7 @@ module.exports.converters = {
         }
     },
     digits: {
-        userInputToStateValue: (userInput)=>{
+        inputer: (userInput)=>{
             if (userInput.match(/\d+/)) {
                 // convert string to number
                 return userInput-0
@@ -58,13 +58,13 @@ module.exports.converters = {
         }
     },
     "datetime-local": {
-        stateValueToUserOutput : (shouldBeDateTime) => {
+        outputer : (shouldBeDateTime) => {
             if (shouldBeDateTime && shouldBeDateTime instanceof Date) {
                 return shouldBeDateTime.toISOString().substring(0, 16)
             }
             return shouldBeDateTime
         },
-        userInputToStateValue: (userInput) => {
+        inputer: (userInput) => {
             return new Date(userInput+'Z')
         }
     }
