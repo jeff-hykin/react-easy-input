@@ -74,10 +74,15 @@ The function should
 2. return userInput when valid 
 3. return new Invalid(userInput) when invalid
 <br>
-Then in the render function put
-    ```<Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>```
+Then in the render function put 
+
+```html
+<Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>
+```
 <br> And if you'd like to display an error message, you can add this to render <br>
-```{ isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }```
+```jsx
+{ isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }
+```
 <br>Here is a full example<br>
 ```jsx
 import React from 'react'
