@@ -8,7 +8,7 @@ Usage within a react component:<br>
 dummyComponent.jsx:<br>
 ```jsx
 import React from 'react'
-import {Input, isInvalid} from 'react-easy-input'                               /* step 1 */
+import {Input, isInvalid} from 'react-easy-input'                               /* <--- step 1 */
 
 
 class dummyComponent extends React.Component {
@@ -20,7 +20,7 @@ class dummyComponent extends React.Component {
     }
     
     onSubmit = () => {
-        if (isInvalid(this.state.emailState)) {                                 /* step 2 */
+        if (isInvalid(this.state.emailState)) {                                 /* <--- step 2 */
             console.log("Yo, "+this.state.emailState+" is not a valid email")
         }
     }
@@ -29,7 +29,7 @@ class dummyComponent extends React.Component {
         return <div>
             <h1>Hello World</h1>
             <div>What's your email?</div>
-            <Input this={this} linkTo="emailState" type="email"  />             /* step 3 */
+            <Input this={this} linkTo="emailState" type="email"  />             /* <--- step 3 */
             <button onClick={this.onSubmit}>Click Me</button>
         </div>
     }
