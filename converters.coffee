@@ -59,4 +59,11 @@ module.exports.converters = {
         inputer: (userInput) => 
             return new Date(userInput+'Z')
     }
+    email : {
+        inputer: (userInput) =>
+            if userInput.match /.+@.+\..+/
+                return userInput
+            else
+                return new Invalid(userInput)
+    }
 }
