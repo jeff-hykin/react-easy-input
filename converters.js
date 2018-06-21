@@ -3,31 +3,29 @@
 // it is used for input validation
 var Invalid, isInvalid;
 
-Invalid = (function() {
-  class Invalid {};
-
-  constructor(value, errorMsg)(function() {
+Invalid = class Invalid {
+  constructor(value, errorMsg) {
     var valueCopy;
+    this.valueOf = this.valueOf.bind(this);
+    this.toString = this.toString.bind(this);
     valueCopy = value;
     // unwrap any invalid values
     while (valueCopy instanceof Invalid) {
       valueCopy = valueCopy.value;
     }
     this.value = valueCopy;
-    return this.errorMsg = errorMsg;
-  });
+    this.errorMsg = errorMsg;
+  }
 
-  valueOf(() => {
+  valueOf() {
     return this.value;
-  });
+  }
 
-  toString(() => {
+  toString() {
     return this.value;
-  });
+  }
 
-  return Invalid;
-
-}).call(this);
+};
 
 isInvalid = function(value) {
   if (typeof value === "object" && value instanceof Invalid) {
@@ -89,9 +87,12 @@ module.exports.converters = {
   },
   email: {
     inputer: (userInput) => {
+      console.log('userInput is ', userInput);
       if (userInput.match(/.+@.+\..+/)) {
+        console.log('userInput is a valid email');
         return userInput;
       } else {
+        console.log('userInput is not an email');
         return new Invalid(userInput);
       }
     }

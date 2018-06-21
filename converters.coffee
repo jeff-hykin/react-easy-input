@@ -1,7 +1,7 @@
 # A class for indicating a value is invalid
 # it is used for input validation
 class Invalid 
-    constructor(value, errorMsg) ->
+    constructor: (value, errorMsg) ->
         valueCopy = value
         # unwrap any invalid values
         while (valueCopy instanceof Invalid) 
@@ -10,8 +10,8 @@ class Invalid
         this.value    = valueCopy
         this.errorMsg = errorMsg
     
-    valueOf  () => this.value
-    toString () => this.value
+    valueOf:  () => this.value
+    toString: () => this.value
     
 isInvalid = (value) ->
     if typeof value == "object" and value instanceof Invalid
@@ -61,9 +61,12 @@ module.exports.converters = {
     }
     email : {
         inputer: (userInput) =>
+            console.log 'userInput is ',userInput
             if userInput.match /.+@.+\..+/
+                console.log 'userInput is a valid email'
                 return userInput
             else
+                console.log 'userInput is not an email'
                 return new Invalid(userInput)
     }
 }

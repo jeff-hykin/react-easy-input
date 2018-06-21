@@ -2,17 +2,19 @@ React = require("react")
 dependencies = require("./converters")
 
 # re-exports
-converters = dependencies.converters then module.exports.converters = converters
-Invalid    = dependencies.Invalid    then module.exports.Invalid    = Invalid
-isInvalid  = dependencies.isInvalid  then module.exports.isInvalid  = isInvalid
+converters = dependencies.converters; module.exports.converters = converters
+Invalid    = dependencies.Invalid   ; module.exports.Invalid    = Invalid
+isInvalid  = dependencies.isInvalid ; module.exports.isInvalid  = isInvalid
 
 
-HandleChange = (thisFromComponent, stateAttribute, inputer=null) => event =>
+HandleChange = (thisFromComponent, stateAttribute, inputer=null) => (event) =>
+    copyOfState = Object.assign(thisFromComponent.state)
     # create a copy of state instead of mutating the original
     newValue = event.target.value
     # if there is a converter function, then run the function before it returns to state
     # for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
-    newValue = inputer(newValue) if inputer
+    if inputer
+        newValue = inputer(newValue)
     
     eval "copyOfState."+stateAttribute+" = newValue"
     # if the Attribute is not nested
@@ -25,21 +27,22 @@ retrieveKeyValueNoExceptions = (object, nested_element, fail_value = "") ->
         output = eval("object" + nested_element)
     return output
 
-
 module.exports.Input = (props) ->
+        # create a mutable copy of props
+        if props.linkTo    then linkTo     = props.linkTo    else linkTo    = null
+        if props.className then className  = props.className else className = "easy-input"
+        if props.classAdd  then classAdd   = props.classAdd  else classAdd  = ""
+        expectedProps = ["linkTo","className", "classAdd"]
         otherProps = {}
-        for each of Object.keys(props)
-            otherProps[each] = props[each]
+        for each in Object.keys(props)
+            if not expectedProps.includes(each)
+                otherProps[each] = props[each]
         
-        # extract the needed props
-        linkTo      = null         then linkTo    = otherProps.linkTo    if otherProps.linkTo    then delete otherProps.linkTo
-        className   = "easy-input" then className = otherProps.className if otherProps.className then delete otherProps.className
-        classAdd    = ""           then classAdd  = otherProps.classAdd  if otherProps.classAdd  then delete otherProps.classAdd
-
         # add additional classes
         className = className + " " + classAdd
         # add error class if there is an "invalid" prop
-        className = "easy-input-error " if otherProps.invalid
+        className = "easy-input-error " + className if otherProps.invalid
+        
         
         # 
         # Controlled input
@@ -49,23 +52,26 @@ module.exports.Input = (props) ->
             valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state,"."+linkTo)
             
             # add error class if the value is invalid
-            className = "easy-input-error "+className if isInvalid valueFromState
+            if isInvalid valueFromState and not (typeof otherProps.invalid == 'bool' and otherProps.invalid == false)
+                className = "easy-input-error "+className
+            # add the classname
+            otherProps.className = className
             
             # retrieve converters
-            converter = {}   then converter = converters[otherProps.type] if otherProps.type in converters
-            outputer  = null then outputer  = converter.outputer          if 'outputer'      in converter 
-            inputer   = null then inputer   = converter.inputer           if 'inputer'       in converter 
+            if converters[otherProps.type] then converter = converters[otherProps.type] else converter = {}
+            if otherProps.outputer then outputer = otherProps.outputer else outputer  = converter.outputer
+            if otherProps.intputer then intputer = otherProps.intputer else intputer  = converter.intputer
             
             # convert the display value if needed
-            valueFromState = outputer(valueFromState) if outputer
+            if outputer then valueFromState = outputer(valueFromState)
             
             # always convert null values to "" (otherwise react will complain)
-            valueFromState = "" if valueFromState is null or valueFromState is undefined
+            if valueFromState is null or valueFromState is undefined then valueFromState = ""
             
             # attach default props
-            otherProps.value     = valueFromState                                 then otherProps.value     = otherProps.value     if otherProps.value     
-            otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer) then otherProps.onChange  = otherProps.onChange  if otherProps.onChange  
-            otherProps.className = className                                      then otherProps.className = otherProps.className if otherProps.className 
+            if otherProps.value     then otherProps.value     = otherProps.value    else otherProps.value     = valueFromState
+            if otherProps.onChange  then otherProps.onChange  = otherProps.onChange else otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer)
+            
             return React.createElement('input', otherProps, null)
         
         # 
