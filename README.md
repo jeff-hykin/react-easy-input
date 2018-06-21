@@ -43,7 +43,7 @@ export default dummyComponent
 ### Use-case 1: basic input
 Import the component `import {Input} from 'react-easy-input'`<br>
 Then in the render function put `<Input this={this} linkTo="name"/>` this will bind the input field to this.state.name.<br>
-### Use-case 2: styling valid vs invalid
+### Use-case 2: styling (valid vs invalid)
 Import the component `import {Input} from 'react-easy-input'`<br>
 Then in the render function put 
 ```jsx
