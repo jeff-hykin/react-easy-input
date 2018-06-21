@@ -1,5 +1,5 @@
 # React-Easy-Input
-A simple react input component that takes 5min to setup, but can also be fully customized to handle any kind of validation <br>
+A simple react input component that takes 5min to setup, but can also be fully customized to handle any kind of validation and/or masking<br>
 More documentation will be added within a week.
 
 # What does example usage look like?
