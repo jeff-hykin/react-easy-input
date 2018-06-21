@@ -9,13 +9,13 @@ module.exports.Invalid = Invalid
 module.exports.isInvalid = isInvalid
 
 
-HandleChange = (thisFromComponent, stateAttribute, userInputToStateConverter=null) => event => {
+HandleChange = (thisFromComponent, stateAttribute, userInputToStateValue=null) => event => {
     // create a copy of state instead of mutating the original
     var newValue = event.target.value
     // if there is a converter function, then run the function before it returns to state
     // for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
-    if (userInputToStateConverter) {
-        newValue = userInputToStateConverter(newValue)
+    if (userInputToStateValue) {
+        newValue = userInputToStateValue(newValue)
     }
     eval("copyOfState."+stateAttribute+" = newValue")
     // if the Attribute is not nested
@@ -59,20 +59,21 @@ module.exports.Input = function(props)
                 className = "easy-input-error "+className
             }
             // retrieve converters
-            var converter                  = otherProps.type              in converters ? converters[otherProps.type]         : {}
-            var stateToUserConverter       = 'stateToUserConverter'       in converter  ? converter.stateToUserConverter      : null
-            var userInputToStateConverter  = 'userInputToStateConverter'  in converter  ? converter.userInputToStateConverter : null
+            var converter              = otherProps.type          in converters ? converters[otherProps.type]      : {}
+            var stateValueToUserOutput = 'stateValueToUserOutput' in converter  ? converter.stateValueToUserOutput : null
+            var userInputToStateValue  = 'userInputToStateValue'  in converter  ? converter.userInputToStateValue  : null
             // convert the display value if needed
-            if (stateToUserConverter) {
-                valueFromState = stateToUserConverter(valueFromState)
+            if (stateValueToUserOutput) {
+                valueFromState = stateValueToUserOutput(valueFromState)
             }
+            
             // always convert null values to "" (otherwise react will complain)
             if (valueFromState == null) {
                 valueFromState = ""
             }
             // attach default props
             otherProps.value     = otherProps.value? otherProps.value         : valueFromState
-            otherProps.onChange  = otherProps.onChange? otherProps.onChange   : HandleChange(otherProps.this, linkTo, userInputToStateConverter),  
+            otherProps.onChange  = otherProps.onChange? otherProps.onChange   : HandleChange(otherProps.this, linkTo, userInputToStateValue),  
             otherProps.className = otherProps.className? otherProps.className : className
             return React.createElement('input', otherProps, null)
         }

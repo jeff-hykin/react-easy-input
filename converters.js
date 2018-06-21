@@ -2,7 +2,12 @@
 // it is used for input validation
 class Invalid {
     constructor(value, errorMsg) {
-        this.value = value
+        var valueCopy = value
+        // unwrap any invalid values
+        while (valueCopy instanceof Invalid) {
+            valueCopy = valueCopy.value
+        }
+        this.value = valueCopy
         this.errorMsg = errorMsg
     }
     valueOf(){
@@ -22,7 +27,7 @@ module.exports.Invalid = Invalid
 module.exports.isInvalid = isInvalid
 module.exports.converters = {
     bool: {
-        stateToUserConverter: (shouldBeBool) => {
+        stateValueToUserOutput: (shouldBeBool) => {
             if (shouldBeBool === true) {
                 return "True"
             } else if (shouldBeBool === false) {
@@ -31,7 +36,7 @@ module.exports.converters = {
             // If provided value is not boolean, then return the value itself
             return shouldBeBool
         },
-        userInputToStateConverter: (userInput) => {
+        userInputToStateValue: (userInput) => {
             var userInputLowerCased = userInput.toLowerCase()
             if (userInputLowerCased == "true") {
                 return true
@@ -43,7 +48,7 @@ module.exports.converters = {
         }
     },
     digits: {
-        userInputToStateConverter: (userInput)=>{
+        userInputToStateValue: (userInput)=>{
             if (userInput.match(/\d+/)) {
                 // convert string to number
                 return userInput-0
@@ -53,13 +58,13 @@ module.exports.converters = {
         }
     },
     "datetime-local": {
-        stateToUserConverter : (shouldBeDateTime) => {
+        stateValueToUserOutput : (shouldBeDateTime) => {
             if (shouldBeDateTime && shouldBeDateTime instanceof Date) {
                 return shouldBeDateTime.toISOString().substring(0, 16)
             }
             return shouldBeDateTime
         },
-        userInputToStateConverter: (userInput) => {
+        userInputToStateValue: (userInput) => {
             return new Date(userInput+'Z')
         }
     }
