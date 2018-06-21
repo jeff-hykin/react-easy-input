@@ -6,7 +6,8 @@ class Invalid
         # unwrap any invalid values
         while (valueCopy instanceof Invalid) 
             valueCopy = valueCopy.value
-
+        this[Symbol.toPrimitive] = (hint) ->
+            return this.value
         this.value    = valueCopy
         this.errorMsg = errorMsg
     
@@ -38,7 +39,7 @@ module.exports.converters = {
             else if userInputLowerCased == "false"
                 return false
             # if not true or false, then its invalid
-            return new Invalid(userInput)
+            return new Invalid(userInput, "Please enter either true or false")
     },
     digits: {
         inputer: (userInput) =>
@@ -61,12 +62,9 @@ module.exports.converters = {
     }
     email : {
         inputer: (userInput) =>
-            console.log 'userInput is ',userInput
             if userInput.match /.+@.+\..+/
-                console.log 'userInput is a valid email'
                 return userInput
             else
-                console.log 'userInput is not an email'
-                return new Invalid(userInput)
+                return new Invalid(userInput, "Please enter a valid email")
     }
 }

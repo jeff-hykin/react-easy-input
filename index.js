@@ -46,24 +46,41 @@ retrieveKeyValueNoExceptions = function(object, nested_element, fail_value = "")
 };
 
 module.exports.Input = function(props) {
-  var classAdd, className, converter, each, expectedProps, i, intputer, len, linkTo, otherProps, outputer, ref, valueFromState;
-  // create a mutable copy of props
+  var classAdd, className, converter, each, expectedProps, i, inputer, len, linkTo, otherProps, outputer, ref, valueFromState;
+  // extract values from props
+  expectedProps = [];
+  expectedProps.push("linkTo");
   if (props.linkTo) {
     linkTo = props.linkTo;
   } else {
     linkTo = null;
   }
+  expectedProps.push("className");
   if (props.className) {
     className = props.className;
   } else {
     className = "easy-input";
   }
+  expectedProps.push("classAdd");
   if (props.classAdd) {
     classAdd = props.classAdd;
   } else {
     classAdd = "";
   }
-  expectedProps = ["linkTo", "className", "classAdd"];
+  expectedProps.push("inputer");
+  if (props.inputer) {
+    inputer = props.inputer;
+  } else {
+    inputer = null;
+  }
+  expectedProps.push("outputer");
+  if (props.outputer) {
+    outputer = props.outputer;
+  } else {
+    outputer = null;
+  }
+  
+  // create a mutable version of props
   otherProps = {};
   ref = Object.keys(props);
   for (i = 0, len = ref.length; i < len; i++) {
@@ -73,77 +90,91 @@ module.exports.Input = function(props) {
     }
   }
   
-  // add additional classes
-  className = className + " " + classAdd;
-  if (otherProps.invalid) {
-    // add error class if there is an "invalid" prop
-    className = "easy-input-error " + className;
-  }
-  
   // Controlled input
 
   if (otherProps.this && linkTo) {
-    // get the value from the component's state
-    valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state, "." + linkTo);
     
-    // add error class if the value is invalid
-    if (isInvalid(valueFromState && !(typeof otherProps.invalid === 'bool' && otherProps.invalid === false))) {
-      className = "easy-input-error " + className;
-    }
-    // add the classname
-    otherProps.className = className;
-    
+    //   Compute value
+
     // retrieve converters
     if (converters[otherProps.type]) {
       converter = converters[otherProps.type];
     } else {
       converter = {};
     }
-    if (otherProps.outputer) {
-      outputer = otherProps.outputer;
-    } else {
+    if (outputer === null) {
       outputer = converter.outputer;
     }
-    if (otherProps.intputer) {
-      intputer = otherProps.intputer;
-    } else {
-      intputer = converter.intputer;
+    if (inputer === null) {
+      inputer = converter.inputer;
     }
     
-    // convert the display value if needed
+    // retrieve the actual value from the component's state
+    valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state, "." + linkTo);
+    // convert the value if needed
     if (outputer) {
       valueFromState = outputer(valueFromState);
     }
-    
     // always convert null values to "" (otherwise react will complain)
     if (valueFromState === null || valueFromState === void 0) {
       valueFromState = "";
     }
     
-    // attach default props
-    if (otherProps.value) {
-      otherProps.value = otherProps.value;
-    } else {
+    // Calculate error styling/css class
+
+    // add additional classes
+    className = className + " " + classAdd;
+    // if invalid was set to something (true/false)
+    if (typeof otherProps.invalid === 'bool') {
+      // if invalid is true
+      if (otherProps.invalid === true) {
+        // add error class if there is an "invalid" prop
+        className = "easy-input-error " + className;
+      }
+    // if invalid is false, dont add error class
+    // if invalid was not set, but the state value is invalid, then add the error class
+    } else if (isInvalid(valueFromState)) {
+      className = "easy-input-error " + className;
+    }
+    // FIXME, check for a errorStyle
+
+    //   Attach values to otherProps
+
+    otherProps.className = className;
+    if (!otherProps.value) {
       otherProps.value = valueFromState;
     }
-    if (otherProps.onChange) {
-      otherProps.onChange = otherProps.onChange;
-    } else {
+    if (!otherProps.onChange) {
       otherProps.onChange = HandleChange(otherProps.this, linkTo, inputer);
     }
     return React.createElement('input', otherProps, null);
-  }
-  if (isInvalid(otherProps.value)) {
+  } else {
     
+    // Calculate error styling/css class
+
+    // add additional classes
+
     // uncontrolled input
 
-    // add error class if the value is invalid 
-    className = "easy-input-error " + className;
+    className = className + " " + classAdd;
+    // if invalid was set to something (true/false)
+    if (typeof otherProps.invalid === 'bool') {
+      // if invalid is true
+      if (otherProps.invalid === true) {
+        // add error class if there is an "invalid" prop
+        className = "easy-input-error " + className;
+      }
+    // if invalid is false, dont add error class
+    // if invalid was not set, but the value is invalid, then add the error class
+    } else if (isInvalid(otherProps.value)) {
+      className = "easy-input-error " + classNam;
+    }
+    if (!otherProps.className) {
+      
+      //   Attach values to otherProps
+
+      otherProps.className = className;
+    }
+    return React.createElement('input', otherProps, null);
   }
-  if (!otherProps.className) {
-    
-    // attach default props
-    otherProps.className = className;
-  }
-  return React.createElement('input', otherProps, null);
 };

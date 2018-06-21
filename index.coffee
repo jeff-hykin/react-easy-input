@@ -28,59 +28,87 @@ retrieveKeyValueNoExceptions = (object, nested_element, fail_value = "") ->
     return output
 
 module.exports.Input = (props) ->
-        # create a mutable copy of props
-        if props.linkTo    then linkTo     = props.linkTo    else linkTo    = null
-        if props.className then className  = props.className else className = "easy-input"
-        if props.classAdd  then classAdd   = props.classAdd  else classAdd  = ""
-        expectedProps = ["linkTo","className", "classAdd"]
+        # extract values from props
+        expectedProps = []
+        expectedProps.push("linkTo"     ); if props.linkTo     then linkTo      = props.linkTo     else linkTo     = null        
+        expectedProps.push("className"  ); if props.className  then className   = props.className  else className  = "easy-input"
+        expectedProps.push("classAdd"   ); if props.classAdd   then classAdd    = props.classAdd   else classAdd   = ""          
+        expectedProps.push("inputer"    ); if props.inputer    then inputer     = props.inputer    else inputer    = null        
+        expectedProps.push("outputer"   ); if props.outputer   then outputer    = props.outputer   else outputer   = null        
+        # create a mutable version of props
         otherProps = {}
         for each in Object.keys(props)
             if not expectedProps.includes(each)
                 otherProps[each] = props[each]
-        
-        # add additional classes
-        className = className + " " + classAdd
-        # add error class if there is an "invalid" prop
-        className = "easy-input-error " + className if otherProps.invalid
-        
-        
+
         # 
         # Controlled input
         # 
         if otherProps.this and linkTo
-            # get the value from the component's state
-            valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state,"."+linkTo)
             
-            # add error class if the value is invalid
-            if isInvalid valueFromState and not (typeof otherProps.invalid == 'bool' and otherProps.invalid == false)
-                className = "easy-input-error "+className
-            # add the classname
-            otherProps.className = className
             
+            #
+            #   Compute value
+            #
             # retrieve converters
             if converters[otherProps.type] then converter = converters[otherProps.type] else converter = {}
-            if otherProps.outputer then outputer = otherProps.outputer else outputer  = converter.outputer
-            if otherProps.intputer then intputer = otherProps.intputer else intputer  = converter.intputer
+            if outputer is null then outputer   = converter.outputer
+            if inputer  is null then inputer    = converter.inputer
             
-            # convert the display value if needed
+            # retrieve the actual value from the component's state
+            valueFromState = retrieveKeyValueNoExceptions(otherProps.this.state,"."+linkTo)
+            # convert the value if needed
             if outputer then valueFromState = outputer(valueFromState)
-            
             # always convert null values to "" (otherwise react will complain)
             if valueFromState is null or valueFromState is undefined then valueFromState = ""
             
-            # attach default props
-            if otherProps.value     then otherProps.value     = otherProps.value    else otherProps.value     = valueFromState
-            if otherProps.onChange  then otherProps.onChange  = otherProps.onChange else otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer)
+            #
+            # Calculate error styling/css class
+            #
+            # add additional classes
+            className = className + " " + classAdd
+            # if invalid was set to something (true/false)
+            if typeof otherProps.invalid == 'bool'
+                # if invalid is true
+                if otherProps.invalid is true
+                    # add error class if there is an "invalid" prop
+                    className = "easy-input-error " + className
+                # if invalid is false, dont add error class
+            # if invalid was not set, but the state value is invalid, then add the error class
+            else if isInvalid valueFromState
+                className = "easy-input-error "+className
+            # FIXME, check for a errorStyle
+            
+            #
+            #   Attach values to otherProps
+            #
+            otherProps.className = className
+            if not otherProps.value     then otherProps.value     = valueFromState
+            if not otherProps.onChange  then otherProps.onChange  = HandleChange(otherProps.this, linkTo, inputer)
             
             return React.createElement('input', otherProps, null)
-        
         # 
         # uncontrolled input
         # 
-        
-        # add error class if the value is invalid 
-        className = "easy-input-error "+className if isInvalid otherProps.value
-        
-        # attach default props
-        otherProps.className = className if not otherProps.className
-        return React.createElement('input', otherProps, null)
+        else
+            #
+            # Calculate error styling/css class
+            #
+            # add additional classes
+            className = className + " " + classAdd
+            # if invalid was set to something (true/false)
+            if typeof otherProps.invalid == 'bool'
+                # if invalid is true
+                if otherProps.invalid is true
+                    # add error class if there is an "invalid" prop
+                    className = "easy-input-error " + className
+                # if invalid is false, dont add error class
+            # if invalid was not set, but the value is invalid, then add the error class
+            else if isInvalid otherProps.value
+                className = "easy-input-error "+classNam
+            
+            #
+            #   Attach values to otherProps
+            #
+            otherProps.className = className if not otherProps.className
+            return React.createElement('input', otherProps, null)
