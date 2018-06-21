@@ -29,7 +29,7 @@ class dummyComponent extends React.Component {
         return <div>
             <h1>Hello World</h1>
             <div>What's you email?</div>
-            <Input this={this} linkTo="emailState" type="email" />
+            <Input this={this} linkTo="emailState" type="email"  />
             <button onClick={this.onSubmit}>Click Me</button>
         </div>
     }
@@ -75,7 +75,7 @@ The function should
 3. return new Invalid(userInput) when invalid
 Then in the render function put `<Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>`<br>
 And if you'd like to display an error message, you can add this to render <br>
-`{ isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}<div> }`
+`{ isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }`
 <br>Here is a full example
 ```jsx
 import React from 'react'
@@ -117,12 +117,23 @@ class dummyComponent extends React.Component {
             <h1>Hello World</h1>
             
             {/* Email */}
-            <Input this={this} placeholder="Email" linkTo="emailState" type="email" />
-            { isInvalid(this.state.emailState) && <div>{this.state.emailState.errorMsg}<div> }
+            <Input 
+                this={this} 
+                placeholder="Email" 
+                linkTo="emailState" 
+                type="email"
+                />
+            { isInvalid(this.state.emailState) && <div>{this.state.emailState.errorMsg}</div> }
 
             {/* Password */}
-            <Input this={this} placeholder="Password" linkTo="passwordState" type="password" inputer={this.passwordInputter} />
-            { isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}<div> }
+            <Input 
+                this={this} 
+                placeholder="Password" 
+                linkTo="passwordState" 
+                type="password"
+                inputer={this.passwordInputter}
+                />
+            { isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }
             
             <button onClick={this.onSubmit}>Click Me</button>
         </div>
