@@ -45,7 +45,7 @@ Then in the render function put `<Input this={this} linkTo="name"/>` this will b
 ### Use-case 2: input + styling
 Import the component`import {Input} from 'react-easy-input'`<br>
 Then in the render function put`<Input this={this} linkTo="name" style={{backgroundColor:"blue"}} />` this will bind the input field to this.state.name<br>
-### Use-case 3: input + auto validation styling
+### Use-case 3: input + validation styling
 Import the component `import {Input} from 'react-easy-input'`<br>
 Then in the render function put `<Input this={this} linkTo="email" type="email" invalidStyle={{backgroundColor:"red"}}/>`<br>
 Because type="email" is one of the easy-input builtin types, it will automatically validate and switch to the invalidStyle whenever the input isn't an email.
