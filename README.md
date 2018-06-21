@@ -28,7 +28,7 @@ class dummyComponent extends React.Component {
     render() {
         return <div>
             <h1>Hello World</h1>
-            <div>What's you email?</div>
+            <div>What's your email?</div>
             <Input this={this} linkTo="emailState" type="email"  />
             <button onClick={this.onSubmit}>Click Me</button>
         </div>
