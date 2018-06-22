@@ -112,13 +112,15 @@ module.exports.Input = function(props) {
     } else {
       converter = {};
     }
-    if (outgoingFilter === null) {
+    if (!outgoingFilter) {
       outgoingFilter = converter.outgoingFilter;
     }
-    if (incomingFilter === null) {
+    if (!incomingFilter) {
       incomingFilter = converter.incomingFilter;
     }
     
+    // FIXME, wrap the incomingFilter to make sure it always receives non-Invalid() values
+
     // retrieve the actual value from the component's state
     valueFromState = retrieveKeyValueNoExceptions(newProps.this.state, "." + linkTo);
     // convert the value if needed

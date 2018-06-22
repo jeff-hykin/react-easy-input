@@ -50,15 +50,25 @@ module.exports.converters = {
                 return new Invalid(userInput, "Please enter a valid email")
     },
     phone : {
-        outgoingFilter: (shouldBeNumber) =>
-            if shouldBeNumber and typeof shouldBeNumber == 'number'
-                numAsString = shouldBeNumber+""
-                areaCode   = numAsString.substring(0,3)
-                secondPart = numAsString.substring(3,6)
-                lastPart   = numAsString.substring(6,10)
-                return "("+areaCode+")-"+secondPart+"-"+lastPart
-            else
-                return shouldBeNumber
+        outgoingFilter: (shouldBeNumber)=>
+            # extract the digits/numbers
+            numAsString = (shouldBeNumber+"").replace(/[^\d]/g,"")
+            areaCode   = numAsString.substring(0,3)  # first 3 digits (if they exist)
+            secondPart = numAsString.substring(3,6)  # next 3 (if they exist)
+            lastPart   = numAsString.substring(6,10) # last 4 (if they exist)
+            numLength  = numAsString.length
+            if numLength == 0        then return "" 
+            else if (numLength <= 3) then return "("+areaCode 
+            else if (numLength <= 6) then return "("+areaCode+")-"+secondPart 
+            else                          return "("+areaCode+")-"+secondPart+"-"+lastPart
         ,
+        incomingFilter: (value)=>
+            # don't allow any character that are not 0-9()-
+            value = value.replace(/[^\d\(\)-]/g,"")
+            # if it matches a full phone number, then convert it to a number
+            if value.match(/\(\d\d\d\)-\d\d\d-\d\d\d\d/)
+                return value.replace(/[^\d]/g,"")-0
+            # otherwise, just report it as invalid
+            return new Invalid(value)
     }
 }
