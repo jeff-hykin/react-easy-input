@@ -60,7 +60,7 @@ To get the primitive value of the input (regardless if its valid/invalid) do `th
 First Import the tools `import {Input, Invalid, isInvalid} from 'react-easy-input'`<br>
 Then somewhere in the file, create a function like this
 ```javascript
-function passwordInputer (userInput) {
+function passwordIncomingFilter (userInput) {
     // if longer than 10, its considered valid
     if (userInput.length > 10) {
         // return user input if valid
@@ -79,7 +79,7 @@ The function should
 Then in the render function put 
 
 ```html
-<Input this={this} linkTo="password" type="password" inputer={passwordInputer}/>
+<Input this={this} linkTo="password" type="password" incomingFilter={passwordIncomingFilter}/>
 ```
 And if you'd like to display an error message, you can add this below it
 ```jsx
@@ -100,7 +100,7 @@ class dummyComponent extends React.Component {
         }
     }
     
-    passwordInputter = (userInput) => {
+    passwordIncomingFilter = (userInput) => {
         if (userInput.match(/.*[0-9].*/) // has number
         && userInput.match(/.*[a-z].*/)  // has lowercase letter
         && userInput.match(/.*[A-Z].*/)  // has uppercase letter
@@ -141,7 +141,7 @@ class dummyComponent extends React.Component {
                 placeholder="Password" 
                 linkTo="passwordState" 
                 type="password"
-                inputer={this.passwordInputter}
+                incomingFilter={this.passwordIncomingFilter}
                 />
             { isInvalid(this.state.passwordState) && <div>{this.state.passwordState.errorMsg}</div> }
             
