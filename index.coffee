@@ -61,7 +61,6 @@ module.exports.Input = (props) ->
             # retrieve the actual value from the component's state
             valueFromState = retrieveKeyValueNoExceptions(newProps.this.state,"."+linkTo)
             # convert the value if needed
-            console.log 'outgoingFilter is',outgoingFilter
             if outgoingFilter then valueFromState = outgoingFilter(valueFromState)
             # always convert null values to "" (otherwise react will complain)
             if valueFromState is null or valueFromState is undefined then valueFromState = ""
