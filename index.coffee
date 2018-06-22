@@ -33,12 +33,12 @@ retrieveKeyValueNoExceptions = (object, nested_element, fail_value = "") ->
 module.exports.Input = (props) ->
         # extract values from props
         expectedProps = []
-        expectedProps.push("invalidStyle" ); if props.invalidStyle  then invalidStyle  = props.invalidStyle else invalidStyle = null        
-        expectedProps.push("linkTo"       ); if props.linkTo        then linkTo        = props.linkTo       else linkTo       = null        
-        expectedProps.push("className"    ); if props.className     then className     = props.className    else className    = "easy-input"
-        expectedProps.push("classAdd"     ); if props.classAdd      then classAdd      = props.classAdd     else classAdd     = ""          
+        expectedProps.push("invalidStyle"        ); if props.invalidStyle         then invalidStyle         = props.invalidStyle        else invalidStyle        = null        
+        expectedProps.push("linkTo"              ); if props.linkTo               then linkTo               = props.linkTo              else linkTo              = null        
+        expectedProps.push("className"           ); if props.className            then className            = props.className           else className           = "easy-input"
+        expectedProps.push("classAdd"            ); if props.classAdd             then classAdd             = props.classAdd            else classAdd            = ""          
         expectedProps.push("incomingFilter"      ); if props.incomingFilter       then incomingFilter       = props.incomingFilter      else incomingFilter      = null        
-        expectedProps.push("outgoingFilter"     ); if props.outgoingFilter      then outgoingFilter      = props.outgoingFilter     else outgoingFilter     = null        
+        expectedProps.push("outgoingFilter"      ); if props.outgoingFilter       then outgoingFilter       = props.outgoingFilter      else outgoingFilter     = null        
         # create a mutable version of props
         newProps = {}
         for each in Object.keys(props)
@@ -53,12 +53,15 @@ module.exports.Input = (props) ->
             #
             # retrieve converters
             if converters[newProps.type] then converter = converters[newProps.type] else converter = {}
-            if outgoingFilter  is null then outgoingFilter    = converter.outgoingFilter
-            if incomingFilter  is null then incomingFilter    = converter.incomingFilter
+            if not outgoingFilter then outgoingFilter = converter.outgoingFilter
+            if not incomingFilter then incomingFilter = converter.incomingFilter
+            
+            # FIXME, wrap the incomingFilter to make sure it always receives non-Invalid() values
             
             # retrieve the actual value from the component's state
             valueFromState = retrieveKeyValueNoExceptions(newProps.this.state,"."+linkTo)
             # convert the value if needed
+            console.log 'outgoingFilter is',outgoingFilter
             if outgoingFilter then valueFromState = outgoingFilter(valueFromState)
             # always convert null values to "" (otherwise react will complain)
             if valueFromState is null or valueFromState is undefined then valueFromState = ""

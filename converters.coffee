@@ -48,5 +48,17 @@ module.exports.converters = {
                 return userInput
             else
                 return new Invalid(userInput, "Please enter a valid email")
+    },
+    phone : {
+        outgoingFilter: (shouldBeNumber) =>
+            if shouldBeNumber and typeof shouldBeNumber == 'number'
+                numAsString = shouldBeNumber+""
+                areaCode   = numAsString.substring(0,3)
+                secondPart = numAsString.substring(3,6)
+                lastPart   = numAsString.substring(6,10)
+                return "("+areaCode+")-"+secondPart+"-"+lastPart
+            else
+                return shouldBeNumber
+        ,
     }
 }

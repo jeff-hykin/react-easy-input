@@ -1,6 +1,6 @@
 {
   "name": "react-easy-input",
-  "version": "1.0.48",
+  "version": "1.0.49",
   "description": "A react input component that has simple validation and masking",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/jeff-hykin/react-easy-input/issues"
   },
-  "homepage": "https://github.com/jeff-hykin/react-easy-input#readme"
+  "homepage": "https://github.com/jeff-hykin/react-easy-input#readme",
+  "dependencies": {
+    "npm": "^6.1.0"
+  }
 }
