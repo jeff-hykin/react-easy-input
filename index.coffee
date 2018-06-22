@@ -8,14 +8,14 @@ Invalid    = invalidModule.Invalid      ; module.exports.Invalid    = Invalid
 isInvalid  = invalidModule.isInvalid    ; module.exports.isInvalid  = isInvalid
 
 # helper function
-HandleChange = (thisFromComponent, stateAttribute, inputer=null) => (event) =>
+HandleChange = (thisFromComponent, stateAttribute, incomingFilter=null) => (event) =>
     copyOfState = Object.assign(thisFromComponent.state)
     # create a copy of state instead of mutating the original
     newValue = event.target.value
     # if there is a converter function, then run the function before it returns to state
     # for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
-    if inputer
-        newValue = inputer(newValue)
+    if incomingFilter
+        newValue = incomingFilter(newValue)
     
     eval "copyOfState."+stateAttribute+" = newValue"
     # if the Attribute is not nested
@@ -37,8 +37,8 @@ module.exports.Input = (props) ->
         expectedProps.push("linkTo"       ); if props.linkTo        then linkTo        = props.linkTo       else linkTo       = null        
         expectedProps.push("className"    ); if props.className     then className     = props.className    else className    = "easy-input"
         expectedProps.push("classAdd"     ); if props.classAdd      then classAdd      = props.classAdd     else classAdd     = ""          
-        expectedProps.push("inputer"      ); if props.inputer       then inputer       = props.inputer      else inputer      = null        
-        expectedProps.push("outputer"     ); if props.outputer      then outputer      = props.outputer     else outputer     = null        
+        expectedProps.push("incomingFilter"      ); if props.incomingFilter       then incomingFilter       = props.incomingFilter      else incomingFilter      = null        
+        expectedProps.push("outgoingFilter"     ); if props.outgoingFilter      then outgoingFilter      = props.outgoingFilter     else outgoingFilter     = null        
         # create a mutable version of props
         newProps = {}
         for each in Object.keys(props)
@@ -53,13 +53,13 @@ module.exports.Input = (props) ->
             #
             # retrieve converters
             if converters[newProps.type] then converter = converters[newProps.type] else converter = {}
-            if outputer is null then outputer   = converter.outputer
-            if inputer  is null then inputer    = converter.inputer
+            if outgoingFilter  is null then outgoingFilter    = converter.outgoingFilter
+            if incomingFilter  is null then incomingFilter    = converter.incomingFilter
             
             # retrieve the actual value from the component's state
             valueFromState = retrieveKeyValueNoExceptions(newProps.this.state,"."+linkTo)
             # convert the value if needed
-            if outputer then valueFromState = outputer(valueFromState)
+            if outgoingFilter then valueFromState = outgoingFilter(valueFromState)
             # always convert null values to "" (otherwise react will complain)
             if valueFromState is null or valueFromState is undefined then valueFromState = ""
             newProps.value = valueFromState
@@ -68,7 +68,7 @@ module.exports.Input = (props) ->
             #   Compute onChange
             #
             if not newProps.onChange
-                newProps.onChange  = HandleChange(newProps.this, linkTo, inputer)
+                newProps.onChange  = HandleChange(newProps.this, linkTo, incomingFilter)
         
         #
         # Calculate styling/css class
@@ -84,7 +84,7 @@ module.exports.Input = (props) ->
                 displayInvalid = yes
             # if 'invalid' is false, dont add error class
         # if 'invalid' prop was not set, but the state value is indeed invalid, then displayInvalid
-        else if isInvalid value
+        else if isInvalid newProps.value
             # then display it
             displayInvalid = yes
 

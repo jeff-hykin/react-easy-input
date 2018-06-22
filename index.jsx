@@ -9,13 +9,13 @@ module.exports.Invalid = Invalid
 module.exports.isInvalid = isInvalid
 
 
-HandleChange = (thisFromComponent, stateAttribute, inputer=null) => event => {
+HandleChange = (thisFromComponent, stateAttribute, incomingFilter=null) => event => {
     // create a copy of state instead of mutating the original
     var newValue = event.target.value
     // if there is a converter function, then run the function before it returns to state
     // for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
-    if (inputer) {
-        newValue = inputer(newValue)
+    if (incomingFilter) {
+        newValue = incomingFilter(newValue)
     }
     eval("copyOfState."+stateAttribute+" = newValue")
     // if the Attribute is not nested
@@ -60,11 +60,11 @@ module.exports.Input = function(props)
             }
             // retrieve converters
             var converter              = otherProps.type          in converters ? converters[otherProps.type]      : {}
-            var outputer = 'outputer' in converter  ? converter.outputer : null
-            var inputer  = 'inputer'  in converter  ? converter.inputer  : null
+            var outgoingFilter = 'outgoingFilter' in converter  ? converter.outgoingFilter : null
+            var incomingFilter  = 'incomingFilter'  in converter  ? converter.incomingFilter  : null
             // convert the display value if needed
-            if (outputer) {
-                valueFromState = outputer(valueFromState)
+            if (outgoingFilter) {
+                valueFromState = outgoingFilter(valueFromState)
             }
             
             // always convert null values to "" (otherwise react will complain)
@@ -73,7 +73,7 @@ module.exports.Input = function(props)
             }
             // attach default props
             otherProps.value     = otherProps.value? otherProps.value         : valueFromState
-            otherProps.onChange  = otherProps.onChange? otherProps.onChange   : HandleChange(otherProps.this, linkTo, inputer),  
+            otherProps.onChange  = otherProps.onChange? otherProps.onChange   : HandleChange(otherProps.this, linkTo, incomingFilter),  
             otherProps.className = otherProps.className? otherProps.className : className
             return React.createElement('input', otherProps, null)
         }

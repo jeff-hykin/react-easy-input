@@ -21,7 +21,7 @@ isInvalid = invalidModule.isInvalid;
 module.exports.isInvalid = isInvalid;
 
 // helper function
-HandleChange = (thisFromComponent, stateAttribute, inputer = null) => {
+HandleChange = (thisFromComponent, stateAttribute, incomingFilter = null) => {
   return (event) => {
     var copyOfState, newValue;
     copyOfState = Object.assign(thisFromComponent.state);
@@ -29,8 +29,8 @@ HandleChange = (thisFromComponent, stateAttribute, inputer = null) => {
     newValue = event.target.value;
     // if there is a converter function, then run the function before it returns to state
     // for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
-    if (inputer) {
-      newValue = inputer(newValue);
+    if (incomingFilter) {
+      newValue = incomingFilter(newValue);
     }
     eval("copyOfState." + stateAttribute + " = newValue");
     // if the Attribute is not nested
@@ -51,7 +51,7 @@ retrieveKeyValueNoExceptions = function(object, nested_element, fail_value = "")
 
 // actual main-code
 module.exports.Input = function(props) {
-  var classAdd, className, converter, displayInvalid, each, expectedProps, i, inputer, invalidStyle, len, linkTo, newProps, outputer, ref, valueFromState;
+  var classAdd, className, converter, displayInvalid, each, expectedProps, i, incomingFilter, invalidStyle, len, linkTo, newProps, outgoingFilter, ref, valueFromState;
   // extract values from props
   expectedProps = [];
   expectedProps.push("invalidStyle");
@@ -78,17 +78,17 @@ module.exports.Input = function(props) {
   } else {
     classAdd = "";
   }
-  expectedProps.push("inputer");
-  if (props.inputer) {
-    inputer = props.inputer;
+  expectedProps.push("incomingFilter");
+  if (props.incomingFilter) {
+    incomingFilter = props.incomingFilter;
   } else {
-    inputer = null;
+    incomingFilter = null;
   }
-  expectedProps.push("outputer");
-  if (props.outputer) {
-    outputer = props.outputer;
+  expectedProps.push("outgoingFilter");
+  if (props.outgoingFilter) {
+    outgoingFilter = props.outgoingFilter;
   } else {
-    outputer = null;
+    outgoingFilter = null;
   }
   
   // create a mutable version of props
@@ -112,18 +112,18 @@ module.exports.Input = function(props) {
     } else {
       converter = {};
     }
-    if (outputer === null) {
-      outputer = converter.outputer;
+    if (outgoingFilter === null) {
+      outgoingFilter = converter.outgoingFilter;
     }
-    if (inputer === null) {
-      inputer = converter.inputer;
+    if (incomingFilter === null) {
+      incomingFilter = converter.incomingFilter;
     }
     
     // retrieve the actual value from the component's state
     valueFromState = retrieveKeyValueNoExceptions(newProps.this.state, "." + linkTo);
     // convert the value if needed
-    if (outputer) {
-      valueFromState = outputer(valueFromState);
+    if (outgoingFilter) {
+      valueFromState = outgoingFilter(valueFromState);
     }
     // always convert null values to "" (otherwise react will complain)
     if (valueFromState === null || valueFromState === void 0) {
@@ -134,7 +134,7 @@ module.exports.Input = function(props) {
     //   Compute onChange
 
     if (!newProps.onChange) {
-      newProps.onChange = HandleChange(newProps.this, linkTo, inputer);
+      newProps.onChange = HandleChange(newProps.this, linkTo, incomingFilter);
     }
   }
   
@@ -152,7 +152,7 @@ module.exports.Input = function(props) {
     }
   // if 'invalid' is false, dont add error class
   // if 'invalid' prop was not set, but the state value is indeed invalid, then displayInvalid
-  } else if (isInvalid(value)) {
+  } else if (isInvalid(newProps.value)) {
     // then display it
     displayInvalid = true;
   }

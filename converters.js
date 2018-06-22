@@ -11,7 +11,7 @@ isInvalid = InvalidModule.isInvalid;
 
 module.exports.converters = {
   bool: {
-    outputer: (shouldBeBool) => {
+    outgoingFilter: (shouldBeBool) => {
       if (shouldBeBool === true) {
         return "True";
       } else if (shouldBeBool === false) {
@@ -20,7 +20,7 @@ module.exports.converters = {
       // If provided value is not boolean, then return the value itself
       return shouldBeBool;
     },
-    inputer: (userInput) => {
+    incomingFilter: (userInput) => {
       var userInputLowerCased;
       userInputLowerCased = userInput.toLowerCase();
       if (userInputLowerCased === "true") {
@@ -33,7 +33,7 @@ module.exports.converters = {
     }
   },
   digits: {
-    inputer: (userInput) => {
+    incomingFilter: (userInput) => {
       if (userInput.match(/\d+/)) {
         // convert string to number
         return userInput - 0;
@@ -44,19 +44,19 @@ module.exports.converters = {
     }
   },
   "datetime-local": {
-    outputer: (shouldBeDateTime) => {
+    outgoingFilter: (shouldBeDateTime) => {
       if (shouldBeDateTime && shouldBeDateTime instanceof Date) {
         return shouldBeDateTime.toISOString().substring(0, 16);
       } else {
         return shouldBeDateTime;
       }
     },
-    inputer: (userInput) => {
+    incomingFilter: (userInput) => {
       return new Date(userInput + 'Z');
     }
   },
   email: {
-    inputer: (userInput) => {
+    incomingFilter: (userInput) => {
       if (userInput.match(/.+@.+\..+/)) {
         return userInput;
       } else {
