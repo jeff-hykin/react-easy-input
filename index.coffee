@@ -45,7 +45,6 @@ module.exports.Input = (props) ->
             if not expectedProps.includes(each)
                 newProps[each] = props[each]
         
-        
         # if input is linked
         if newProps.this and linkTo
             #
@@ -60,12 +59,13 @@ module.exports.Input = (props) ->
             
             # retrieve the actual value from the component's state
             valueFromState = retrieveKeyValueNoExceptions(newProps.this.state,"."+linkTo)
+            valueIsInvalid = isInvalid valueFromState #FIXME, there could be a better solution than this
             # convert the value if needed
             if outgoingFilter then valueFromState = outgoingFilter(valueFromState)
             # always convert null values to "" (otherwise react will complain)
             if valueFromState is null or valueFromState is undefined then valueFromState = ""
             newProps.value = valueFromState
-            
+            if valueIsInvalid then newProps.value = new Invalid(newProps.value)
             #
             #   Compute onChange
             #
@@ -89,7 +89,7 @@ module.exports.Input = (props) ->
         else if isInvalid newProps.value
             # then display it
             displayInvalid = yes
-
+        
         if displayInvalid is yes
             # add the error css class
             className = "easy-input-error " + className

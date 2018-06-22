@@ -51,7 +51,7 @@ retrieveKeyValueNoExceptions = function(object, nested_element, fail_value = "")
 
 // actual main-code
 module.exports.Input = function(props) {
-  var classAdd, className, converter, displayInvalid, each, expectedProps, i, incomingFilter, invalidStyle, len, linkTo, newProps, outgoingFilter, ref, valueFromState;
+  var classAdd, className, converter, displayInvalid, each, expectedProps, i, incomingFilter, invalidStyle, len, linkTo, newProps, outgoingFilter, ref, valueFromState, valueIsInvalid;
   // extract values from props
   expectedProps = [];
   expectedProps.push("invalidStyle");
@@ -123,6 +123,7 @@ module.exports.Input = function(props) {
 
     // retrieve the actual value from the component's state
     valueFromState = retrieveKeyValueNoExceptions(newProps.this.state, "." + linkTo);
+    valueIsInvalid = isInvalid(valueFromState); //FIXME, there could be a better solution than this
     // convert the value if needed
     if (outgoingFilter) {
       valueFromState = outgoingFilter(valueFromState);
@@ -132,6 +133,9 @@ module.exports.Input = function(props) {
       valueFromState = "";
     }
     newProps.value = valueFromState;
+    if (valueIsInvalid) {
+      newProps.value = new Invalid(newProps.value);
+    }
     
     //   Compute onChange
 

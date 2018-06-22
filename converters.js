@@ -87,8 +87,11 @@ module.exports.converters = {
       // don't allow any character that are not 0-9()-
       value = value.replace(/[^\d\(\)-]/g, "");
       // if it matches a full phone number, then convert it to a number
-      if (value.match(/\(\d\d\d\)-\d\d\d-\d\d\d\d/)) {
-        return value.replace(/[^\d]/g, "") - 0;
+      // FIXME, there is a bug somewhere
+      if (value.match(/^\(\d\d\d\)-\d\d\d-\d\d\d\d.*/)) {
+        value = value.replace(/[^\d]/g, "");
+        value = value.substring(0, 10);
+        return value - 0;
       }
       // otherwise, just report it as invalid
       return new Invalid(value);
