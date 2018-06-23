@@ -7,6 +7,21 @@ converterModule = require("./converters");
 
 invalidModule = require('./Invalid');
 
+// FIXMEs
+// upgrade to smart component
+// add a ref for setting cursor position to fix cursor bounce
+// run the incomingFilter on mount to check initial validity
+// unwrap the invalid class before handing it to outgoingFilter
+
+// TODO
+// add some props
+// required, invalidClass
+// add more converters
+// numeric, integer, decimal, percent
+
+// EVENTUALLY
+// add masking, mask=[/[^@]+/,"@",/\d/,"."]
+
 // re-exports
 converters = converterModule.converters;
 
@@ -51,7 +66,7 @@ retrieveKeyValueNoExceptions = function(object, nested_element, fail_value = "")
 
 // actual main-code
 module.exports.Input = function(props) {
-  var classAdd, className, converter, displayInvalid, each, expectedProps, i, incomingFilter, invalidStyle, len, linkTo, newProps, outgoingFilter, ref, valueFromState, valueIsInvalid;
+  var classAdd, className, converter, displayInvalid, each, expectedProps, i, incomingFilter, invalidStyle, len, linkTo, newProps, outgoingFilter, ref, valueIsInvalid;
   // extract values from props
   expectedProps = [];
   expectedProps.push("invalidStyle");
@@ -101,47 +116,50 @@ module.exports.Input = function(props) {
     }
   }
   
-  // if input is linked
+  // retrieve converters
+
+  if (converters[newProps.type]) {
+    converter = converters[newProps.type];
+  } else {
+    converter = {};
+  }
+  if (!outgoingFilter) {
+    outgoingFilter = converter.outgoingFilter;
+  }
+  if (!incomingFilter) {
+    incomingFilter = converter.incomingFilter;
+  }
+  // FIXME, wrap the incomingFilter to make sure it always receives non-Invalid() values
+
+  // retrieve value
+
   if (newProps.this && linkTo) {
-    
-    //   Compute value
-
-    // retrieve converters
-    if (converters[newProps.type]) {
-      converter = converters[newProps.type];
-    } else {
-      converter = {};
-    }
-    if (!outgoingFilter) {
-      outgoingFilter = converter.outgoingFilter;
-    }
-    if (!incomingFilter) {
-      incomingFilter = converter.incomingFilter;
-    }
-    
-    // FIXME, wrap the incomingFilter to make sure it always receives non-Invalid() values
-
     // retrieve the actual value from the component's state
-    valueFromState = retrieveKeyValueNoExceptions(newProps.this.state, "." + linkTo);
-    valueIsInvalid = isInvalid(valueFromState); //FIXME, there could be a better solution than this
-    // convert the value if needed
-    if (outgoingFilter) {
-      valueFromState = outgoingFilter(valueFromState);
-    }
-    // always convert null values to "" (otherwise react will complain)
-    if (valueFromState === null || valueFromState === void 0) {
-      valueFromState = "";
-    }
-    newProps.value = valueFromState;
-    if (valueIsInvalid) {
-      newProps.value = new Invalid(newProps.value);
-    }
-    
-    //   Compute onChange
+    newProps.value = retrieveKeyValueNoExceptions(newProps.this.state, "." + linkTo);
+  }
+  
+  // get the cursor position (WIP: trying to fix cursor jump)
+  // cursorPos = retrieveKeyValueNoExceptions(this,".refs.input.selectionStart")
+  // preserve the in-validity
+  valueIsInvalid = isInvalid(newProps.value); //FIXME, there could be a better solution than this
+  
+  // convert the value (if needed)
 
-    if (!newProps.onChange) {
-      newProps.onChange = HandleChange(newProps.this, linkTo, incomingFilter);
-    }
+  if (outgoingFilter) {
+    newProps.value = outgoingFilter(newProps.value);
+  }
+  // always convert null values to "" (otherwise react will complain)
+  if (newProps.value === null || newProps.value === void 0) {
+    newProps.value = "";
+  }
+  if (valueIsInvalid) {
+    newProps.value = new Invalid(newProps.value);
+  }
+  
+  //   Compute onChange
+
+  if (!newProps.onChange) {
+    newProps.onChange = HandleChange(newProps.this, linkTo, incomingFilter);
   }
   
   // Calculate styling/css class
@@ -171,6 +189,41 @@ module.exports.Input = function(props) {
       newProps.style = invalidStyle;
     }
   }
+  
+  // set a reference (WIP: trying to fix cursor jump)
+  newProps.ref = "input";
+  
   // return the react input component
   return React.createElement('input', newProps, null);
 };
+
+// Cursor fix instructions 
+
+// Top of outgoingFilter
+// this.__cursorPos__  = retrieveKeyValueNoExceptions(this,".refs.phone.refs.input.selectionStart")
+// this.__PreviousOutput__ = this.__Output__
+// Bottom of outgoingFilter
+// var outputLength = (this.__Output__? this.__Output__.valueOf().length : 0)
+// var previousOutputLength = this.__PreviousOutput__? this.__PreviousOutput__.length : 0
+// this.__differenceByOutFilter__ = outputLength - this.__LengthAfterChange__
+// if (this.__PreviousOutput__ != this.__Output__ && outputLength == previousOutputLength) {
+//     this.__differenceByOutFilter__ = 0
+// }
+// return this.__Output__
+// Top of incomingFilter
+// // get the length 
+// this.__LengthAfterChange__ = value ? value.valueOf().length : 0
+// // run adjustment
+// setTimeout(() => {
+//     console.log(`moving cursor:`)
+//     if (Global.retrieveKeyValueNoExceptions(this,".refs.phone.refs.input.selectionStart")) {
+//         console.log(`    this.refs.phone.refs.input.selectionStart is:`,this.refs.phone.refs.input.selectionStart)
+//         this.__cursorPos__ = this.__cursorPos__   + this.__differenceByOutFilter__
+//         console.log(`    this.__cursorPos__ + difference is:`,this.__cursorPos__)
+//         if (this.refs.phone.refs.input.selectionStart != this.__cursorPos__ ) {
+//             this.refs.phone.refs.input.selectionStart = this.__cursorPos__ 
+//             this.refs.phone.refs.input.selectionEnd   = this.__cursorPos__
+//         }
+//         console.log(`    this.refs.phone.refs.input.selectionStart is:`,this.refs.phone.refs.input.selectionEnd)
+//     }
+// }, 0);

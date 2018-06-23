@@ -13,6 +13,7 @@ class Invalid
     toString: () => this.value
     
 isInvalid = (value) ->
+    # FIXME, check for any constructor with the name invalid not just this^ invalid
     if typeof value == "object" and value instanceof Invalid
         return true
     else

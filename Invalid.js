@@ -29,6 +29,7 @@ Invalid = class Invalid {
 };
 
 isInvalid = function(value) {
+  // FIXME, check for any constructor with the name invalid not just this^ invalid
   if (typeof value === "object" && value instanceof Invalid) {
     return true;
   } else {
