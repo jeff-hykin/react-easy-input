@@ -7,12 +7,16 @@ invalidModule   = require('./Invalid')
         # add a ref for setting cursor position to fix cursor bounce
         # run the incomingFilter on mount to check initial validity
     # unwrap the invalid class before handing it to outgoingFilter
+    # use setCustomValidity in the onChange that has an Invalid errMsg
+    # if onChange and linkTo are set, then wrap the existing onChange
+    # if onChange and incomingFilter are set, then wrap the existing onChange
 
 # TODO
     # add some props
-        # required, invalidClass
+        # required, invalidClass, validateImmediately(show red on empty required fields onload), validateOnblur (show red only after/not during field editing)
     # add more converters
         # numeric, integer, decimal, percent
+        
 
 # EVENTUALLY
     # add masking, mask=[/[^@]+/,"@",/\d/,"."]
@@ -26,6 +30,9 @@ isInvalid  = invalidModule.isInvalid    ; module.exports.isInvalid  = isInvalid
 
 # helper function
 HandleChange = (thisFromComponent, stateAttribute, incomingFilter=null) => (event) =>
+
+    
+    
     copyOfState = Object.assign(thisFromComponent.state)
     # create a copy of state instead of mutating the original
     newValue = event.target.value
@@ -39,6 +46,7 @@ HandleChange = (thisFromComponent, stateAttribute, incomingFilter=null) => (even
     # update the compoenent state once with the new state
     thisFromComponent.setState(copyOfState)
 
+
 # helper function
 retrieveKeyValueNoExceptions = (object, nested_element, fail_value = "") -> 
     output = fail_value
@@ -46,8 +54,31 @@ retrieveKeyValueNoExceptions = (object, nested_element, fail_value = "") ->
         output = eval("object" + nested_element)
     return output
 
-# actual main-code
-module.exports.Input = (props) ->
+
+# helper function
+resetCursor = (thisFromInput) ->
+        if retrieveKeyValueNoExceptions(thisFromInput,".refs.input.selectionStart")
+            inputSelectionStart = thisFromInput.refs.input.selectionStart
+            
+        
+        moveCursor = () -> 
+            cursorPos = retrieveKeyValueNoExceptions(thisFromInput,".refs.input.selectionStart")
+            if cursorPos
+                if inputSelectionStart
+                    thisFromInput.refs.input.selectionStart = inputSelectionStart
+                    thisFromInput.refs.input.selectionEnd   = inputSelectionStart
+        
+        setTimeout( moveCursor, 0)
+
+
+class Input extends React.Component
+    
+    constructor: (props)->
+        super(props)
+    
+    render: ->
+        props = this.props
+        
         # extract values from props
         expectedProps = []
         expectedProps.push("invalidStyle"        ); if props.invalidStyle         then invalidStyle         = props.invalidStyle        else invalidStyle        = null        
@@ -55,12 +86,13 @@ module.exports.Input = (props) ->
         expectedProps.push("className"           ); if props.className            then className            = props.className           else className           = "easy-input"
         expectedProps.push("classAdd"            ); if props.classAdd             then classAdd             = props.classAdd            else classAdd            = ""          
         expectedProps.push("incomingFilter"      ); if props.incomingFilter       then incomingFilter       = props.incomingFilter      else incomingFilter      = null        
-        expectedProps.push("outgoingFilter"      ); if props.outgoingFilter       then outgoingFilter       = props.outgoingFilter      else outgoingFilter     = null        
+        expectedProps.push("outgoingFilter"      ); if props.outgoingFilter       then outgoingFilter       = props.outgoingFilter      else outgoingFilter      = null        
         # create a mutable version of props
         newProps = {}
         for each in Object.keys(props)
             if not expectedProps.includes(each)
                 newProps[each] = props[each]
+        
         
         #
         # retrieve converters
@@ -80,7 +112,7 @@ module.exports.Input = (props) ->
         
         # get the cursor position (WIP: trying to fix cursor jump)
         # cursorPos = retrieveKeyValueNoExceptions(this,".refs.input.selectionStart")
-        # preserve the in-validity
+        # preserve the validity/un-validityness
         valueIsInvalid = isInvalid newProps.value #FIXME, there could be a better solution than this
         
         
@@ -92,12 +124,25 @@ module.exports.Input = (props) ->
         if newProps.value is null or newProps.value is undefined then newProps.value = ""
         if valueIsInvalid then newProps.value = new Invalid(newProps.value)
         
+        
         #
         #   Compute onChange
         #
         if not newProps.onChange
-            newProps.onChange  = HandleChange(newProps.this, linkTo, incomingFilter)
+            # first reset the cursor, then handle the change
+            newProps.onChange  = (e) =>
+                e.persist()  # react will destroy e if we don't tell it to persist
+                resetCursor(this)
+                HandleChange(newProps.this, linkTo, incomingFilter)(e)
+        else
+            newProps.onChange  = (e) =>
+                e.persist() # react will destroy e if we don't tell it to persist
+                resetCursor(this)
+                props.onChange(e)
         
+        
+        
+
         #
         # Calculate styling/css class
         #
@@ -129,38 +174,34 @@ module.exports.Input = (props) ->
         
         # return the react input component
         return React.createElement('input', newProps, null)
+        
+    
+module.exports.Input = Input
 
 
 
-
-# Cursor fix instructions 
-
-# Top of outgoingFilter
-    # this.__cursorPos__  = retrieveKeyValueNoExceptions(this,".refs.phone.refs.input.selectionStart")
-    # this.__PreviousOutput__ = this.__Output__
-# Bottom of outgoingFilter
-    # var outputLength = (this.__Output__? this.__Output__.valueOf().length : 0)
-    # var previousOutputLength = this.__PreviousOutput__? this.__PreviousOutput__.length : 0
-    # this.__differenceByOutFilter__ = outputLength - this.__LengthAfterChange__
-    # if (this.__PreviousOutput__ != this.__Output__ && outputLength == previousOutputLength) {
-    #     this.__differenceByOutFilter__ = 0
-    # }
-    # return this.__Output__
-# Top of incomingFilter
-    # // get the length 
-    # this.__LengthAfterChange__ = value ? value.valueOf().length : 0
-    # // run adjustment
-    # setTimeout(() => {
-    #     console.log(`moving cursor:`)
-    #     if (Global.retrieveKeyValueNoExceptions(this,".refs.phone.refs.input.selectionStart")) {
-    #         console.log(`    this.refs.phone.refs.input.selectionStart is:`,this.refs.phone.refs.input.selectionStart)
-    #         this.__cursorPos__ = this.__cursorPos__   + this.__differenceByOutFilter__
-    #         console.log(`    this.__cursorPos__ + difference is:`,this.__cursorPos__)
-    #         if (this.refs.phone.refs.input.selectionStart != this.__cursorPos__ ) {
-    #             this.refs.phone.refs.input.selectionStart = this.__cursorPos__ 
-    #             this.refs.phone.refs.input.selectionEnd   = this.__cursorPos__
-    #         }
-    #         console.log(`    this.refs.phone.refs.input.selectionStart is:`,this.refs.phone.refs.input.selectionEnd)
+# validate onblur instructions (implement in next few versions)
+    # onChange={
+    #     (e)=>{
+    #         var val = e.target.value
+    #         e.persist()
+    #         setTimeout(() => {
+    #             e.target.onblur = () => {
+    #                 console.log(`val is:`,val)
+    #                 var matches = val.match(/^.+@.+\..+$/)
+    #                 console.log(`val.match(/\\d+/) is:`,val.match(/\d+/))
+    #                 if (!matches) {
+    #                     console.log(`doesnt match`)
+    #                     e.target.setCustomValidity("Needs to be a number")
+    #                     e.target.classList.add('input-err')
+    #                     // this.refs.form.reportValidity()
+    #                 } else {
+    #                     console.log(`matches`)
+                        
+    #                 }
+    #             }
+    #         }, 0);
+    #         this.setState({Nums:val})
     #     }
-    # }, 0);
-
+    # }
+    # />
