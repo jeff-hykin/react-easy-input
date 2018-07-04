@@ -110,9 +110,6 @@ class Input extends React.Component
                 newValue = e.target.value
                 resetCursor(this)
                 
-                
-                # create a copy of state instead of mutating the original
-                
                 # if there is a converter function, then run the function before it returns to state
                 # for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
                 if incomingFilter
@@ -123,6 +120,7 @@ class Input extends React.Component
                     newProps.this.setState({[linkTo]: newValue})
                 # if nested (Array)
                 if linkTo instanceof Array
+                    # create a copy of state instead of mutating the original
                     copyOfState = Object.assign(newProps.this.state)
                     invalidModule.set(copyOfState, linkTo, newValue)
                     newProps.this.setState(copyOfState)

@@ -36,7 +36,7 @@ class Invalid
     toString: () => this.value
     
 isInvalid = (value) ->
-    var name = get(value, ["constructor","name"])
+    name = get(value, ["constructor","name"])
     if (name == "Invalid")
         return true
     else 
