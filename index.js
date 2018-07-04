@@ -9,7 +9,6 @@ invalidModule = require('./Invalid');
 
 // FIXMEs
 // upgrade to smart component
-// add a ref for setting cursor position to fix cursor bounce
 // run the incomingFilter on mount to check initial validity
 // unwrap the invalid class before handing it to outgoingFilter
 // use setCustomValidity in the onChange that has an Invalid errMsg
@@ -240,28 +239,7 @@ Input = class Input extends React.Component {
 
 module.exports.Input = Input;
 
-// Cursor fix instructions 
-
-// Top of outgoingFilter
-// this.__cursorPos__  = retrieveKeyValueNoExceptions(this,".refs.phone.refs.input.selectionStart")
-// this.__PreviousOutput__ = this.__Output__
-// Bottom of outgoingFilter
-// var outputLength = (this.__Output__? this.__Output__.valueOf().length : 0)
-// var previousOutputLength = this.__PreviousOutput__? this.__PreviousOutput__.length : 0
-// this.__differenceByOutFilter__ = outputLength - this.__LengthAfterChange__
-// if (this.__PreviousOutput__ != this.__Output__ && outputLength == previousOutputLength) {
-//     this.__differenceByOutFilter__ = 0
-// }
-// return this.__Output__
-// Top of incomingFilter
-// // get the length 
-// this.__LengthAfterChange__ = value ? value.valueOf().length : 0
-// // run adjustment
-
-// create a ref
-// reset the cursor with settimout after every change
-
-// validate onblur instructions 
+// validate onblur instructions (implement in next few versions)
 // onChange={
 //     (e)=>{
 //         var val = e.target.value

@@ -1,3 +1,26 @@
+get = (obj, keyList, failValue=null) ->
+    if typeof keyList == 'string'
+        keyList = keyList.split '.'
+    
+    for each of keyList
+        try 
+            obj = obj[each]
+        catch
+            return failValue
+    
+    if obj == null
+        return failValue
+    else
+        return obj
+
+set = (obj, attributeList, value) -> 
+    lastAttribute = attributeList.pop()
+    for elem of attributeList
+        if (!obj[elem] instanceof Object)
+            obj[elem] = {}
+        obj = obj[elem]
+    obj[lastAttribute] = value
+
 class Invalid 
     constructor: (value, errorMsg) ->
         valueCopy = value
@@ -13,11 +36,13 @@ class Invalid
     toString: () => this.value
     
 isInvalid = (value) ->
-    # FIXME, check for any constructor with the name invalid not just this^ invalid
-    if typeof value == "object" and value instanceof Invalid
+    var name = get(value, ["constructor","name"])
+    if (name == "Invalid")
         return true
-    else
+    else 
         return false
 
 module.exports.Invalid   = Invalid
 module.exports.isInvalid = isInvalid
+module.exports.set       = set
+module.exports.get       = get
