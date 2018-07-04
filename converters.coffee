@@ -25,12 +25,29 @@ module.exports.converters = {
     },
     digits: {
         incomingFilter: (userInput) =>
-            if  userInput.match /\d+/
-                # convert string to number
-                return userInput-0
-            # if its not a number
+            userInput = userInput.replace( /[^\d]/g, "" )
+            return userInput
+    },
+    decimal: {
+        incomingFilter: (userInput) =>
+            # remove all additional decimals
+            while userInput.match(/\..*\./)
+                userInput = userInput.replace( /(\..*)\./g, "$1" )
+            # get rid of extraneous characters 
+            userInput = userInput.replace( /[^\d\.]/g, "" )
+            # make sure its in the correct format
+            userInput = userInput.replace( /^.*?(\d*).*?(\.?).*?(\d*).*?$/g, "$1$2$3" )
+            # check for the one major invalid case
+            if userInput == "."
+                return new Invalid(userInput)
             else
-                return new Invalid(userInput, "Please only input numerical digits (0-9)")
+                return userInput
+        
+    },
+    numeric: {
+        incomingFilter: (userInput) =>
+            userInput = userInput.replace( /[^\d\.]/g, "" )
+            return userInput
     },
     "datetime-local": {
         outgoingFilter : (shouldBeDateTime) => 
@@ -58,5 +75,15 @@ module.exports.converters = {
                 return value - 0
             # otherwise, just report it as invalid
             return new Invalid(value)
-    }
+    },
+    # numerical : {
+    #     incomingFilter: (value) => 
+    #         # don't allow any characters that are not 0-9 or () or - or .
+    #         value = value.replace(/[^\d]/g, "")
+    #         value = value.substring(0, 11)
+    #         if  value.length >= 10
+    #             return value - 0
+    #         # otherwise, just report it as invalid
+    #         return new Invalid(value)
+    # }
 }

@@ -1,9 +1,11 @@
 {
   "name": "react-easy-input",
   "version": "1.0.82",
+  "version": "1.0.81",
   "description": "A react input component that has simple validation and masking",
   "main": "index.js",
   "scripts": {
+    "build": "coffee -b -c *.coffee",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
