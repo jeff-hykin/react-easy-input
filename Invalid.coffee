@@ -2,7 +2,7 @@ get = (obj, keyList, failValue=null) ->
     if typeof keyList == 'string'
         keyList = keyList.split '.'
     
-    for each of keyList
+    for each in keyList
         try 
             obj = obj[each]
         catch
@@ -25,8 +25,8 @@ class Invalid
     constructor: (value, errorMsg) ->
         valueCopy = value
         # unwrap any invalid values
-        while (valueCopy instanceof Invalid) 
-            valueCopy = valueCopy.value
+        while (isInvalid(valueCopy)) 
+            valueCopy = valueCopy.valueOf()
         this[Symbol.toPrimitive] = (hint) ->
             return this.value
         this.value    = valueCopy

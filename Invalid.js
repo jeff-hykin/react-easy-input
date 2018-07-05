@@ -2,11 +2,12 @@
 var Invalid, get, isInvalid, set;
 
 get = function(obj, keyList, failValue = null) {
-  var each;
+  var each, i, len;
   if (typeof keyList === 'string') {
     keyList = keyList.split('.');
   }
-  for (each in keyList) {
+  for (i = 0, len = keyList.length; i < len; i++) {
+    each = keyList[i];
     try {
       obj = obj[each];
     } catch (error) {

@@ -117,13 +117,13 @@ class Input extends React.Component
                 
                 # non-nested state value (string)
                 if typeof linkTo == 'string'
-                    newProps.this.setState({[linkTo]: newValue})
+                    props.this.setState({[linkTo]: newValue})
                 # if nested (Array)
                 if linkTo instanceof Array
                     # create a copy of state instead of mutating the original
                     copyOfState = Object.assign(newProps.this.state)
                     invalidModule.set(copyOfState, linkTo, newValue)
-                    newProps.this.setState(copyOfState)
+                    props.this.setState(copyOfState)
                 
         else
             newProps.onChange  = (e) =>

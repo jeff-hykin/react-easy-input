@@ -173,7 +173,7 @@ Input = class Input extends React.Component {
         
         // non-nested state value (string)
         if (typeof linkTo === 'string') {
-          newProps.this.setState({
+          props.this.setState({
             [linkTo]: newValue
           });
         }
@@ -182,7 +182,7 @@ Input = class Input extends React.Component {
           // create a copy of state instead of mutating the original
           copyOfState = Object.assign(newProps.this.state);
           invalidModule.set(copyOfState, linkTo, newValue);
-          return newProps.this.setState(copyOfState);
+          return props.this.setState(copyOfState);
         }
       };
     } else {
