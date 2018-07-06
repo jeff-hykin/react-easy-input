@@ -3,7 +3,7 @@ get = (obj, keyList, failValue=null) ->
         keyList = keyList.split '.'
     
     for each in keyList
-        try 
+        try
             obj = obj[each]
         catch
             return failValue
@@ -13,20 +13,23 @@ get = (obj, keyList, failValue=null) ->
     else
         return obj
 
-set = (obj, attributeList, value) -> 
+set = (obj, attributeList, value) ->
+    if typeof attributeList == 'string'
+        attributeList = attributeList.split '.'
+        
     lastAttribute = attributeList.pop()
-    for elem of attributeList
+    for elem in attributeList
         if (!obj[elem] instanceof Object)
             obj[elem] = {}
         obj = obj[elem]
     obj[lastAttribute] = value
 
-class Invalid 
+class Invalid
     constructor: (value, errorMsg) ->
         valueCopy = value
         # unwrap any invalid values
-        while (isInvalid(valueCopy)) 
-            valueCopy = valueCopy.valueOf()
+        while (valueCopy instanceof Invalid)
+            valueCopy = valueCopy.value
         this[Symbol.toPrimitive] = (hint) ->
             return this.value
         this.value    = valueCopy
@@ -36,10 +39,10 @@ class Invalid
     toString: () => this.value
     
 isInvalid = (value) ->
-    name = get(value, ["constructor","name"])
+    name = get(value, ["constructor", "name"])
     if (name == "Invalid")
         return true
-    else 
+    else
         return false
 
 module.exports.Invalid   = Invalid

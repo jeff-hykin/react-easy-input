@@ -35,12 +35,12 @@ isInvalid  = invalidModule.isInvalid    ; module.exports.isInvalid  = isInvalid
 
 # helper function
 resetCursor = (thisFromInput) ->
-        if get(thisFromInput,["refs","input","selectionStart"],"")
+        if get(thisFromInput, ["refs", "input", "selectionStart"], "")
             inputSelectionStart = thisFromInput.refs.input.selectionStart
             
         
-        moveCursor = () -> 
-            cursorPos = get(thisFromInput,["refs","input","selectionStart"],"")
+        moveCursor = () ->
+            cursorPos = get(thisFromInput, ["refs", "input", "selectionStart"], "")
             if cursorPos
                 if inputSelectionStart
                     thisFromInput.refs.input.selectionStart = inputSelectionStart
@@ -51,7 +51,7 @@ resetCursor = (thisFromInput) ->
 
 class Input extends React.Component
     
-    constructor: (props)->
+    constructor: (props) ->
         super(props)
     
     render: ->
@@ -59,12 +59,12 @@ class Input extends React.Component
         
         # extract values from props
         expectedProps = []
-        expectedProps.push("invalidStyle"        ); if props.invalidStyle         then invalidStyle         = props.invalidStyle        else invalidStyle        = null        
-        expectedProps.push("linkTo"              ); if props.linkTo               then linkTo               = props.linkTo              else linkTo              = null        
-        expectedProps.push("className"           ); if props.className            then className            = props.className           else className           = "easy-input"
-        expectedProps.push("classAdd"            ); if props.classAdd             then classAdd             = props.classAdd            else classAdd            = ""          
-        expectedProps.push("incomingFilter"      ); if props.incomingFilter       then incomingFilter       = props.incomingFilter      else incomingFilter      = null        
-        expectedProps.push("outgoingFilter"      ); if props.outgoingFilter       then outgoingFilter       = props.outgoingFilter      else outgoingFilter      = null        
+        expectedProps.push("invalidStyle"   ); if props.invalidStyle   then invalidStyle   = props.invalidStyle   else invalidStyle   = null
+        expectedProps.push("linkTo"         ); if props.linkTo         then linkTo         = props.linkTo         else linkTo         = null
+        expectedProps.push("className"      ); if props.className      then className      = props.className      else className      = "easy-input"
+        expectedProps.push("classAdd"       ); if props.classAdd       then classAdd       = props.classAdd       else classAdd       = ""
+        expectedProps.push("incomingFilter" ); if props.incomingFilter then incomingFilter = props.incomingFilter else incomingFilter = null
+        expectedProps.push("outgoingFilter" ); if props.outgoingFilter then outgoingFilter = props.outgoingFilter else outgoingFilter = null
         # create a mutable version of props
         newProps = {}
         for each in Object.keys(props)
@@ -85,7 +85,7 @@ class Input extends React.Component
         #
         if newProps.this and linkTo
             # retrieve the actual value from the component's state
-            newProps.value = get(newProps.this.state, linkTo,"")
+            newProps.value = get(newProps.this.state, linkTo, "")
         
         
         # preserve the validity/un-validityness
@@ -111,19 +111,15 @@ class Input extends React.Component
                 resetCursor(this)
                 
                 # if there is a converter function, then run the function before it returns to state
-                # for example convert "True" into the boolean: true, or convert the string "Jan 12 2017" to dateTime(1,12,2017)
+                # for example convert "True" into the boolean: true,
+                # or convert the string "Jan 12 2017" to dateTime(1,12,2017)
                 if incomingFilter
                     newValue = incomingFilter(newValue)
                 
-                # non-nested state value (string)
-                if typeof linkTo == 'string'
-                    props.this.setState({[linkTo]: newValue})
-                # if nested (Array)
-                if linkTo instanceof Array
-                    # create a copy of state instead of mutating the original
-                    copyOfState = Object.assign(newProps.this.state)
-                    invalidModule.set(copyOfState, linkTo, newValue)
-                    props.this.setState(copyOfState)
+                # create a copy of state instead of mutating the original
+                copyOfState = Object.assign(newProps.this.state)
+                invalidModule.set(copyOfState, linkTo, newValue)
+                props.this.setState(copyOfState)
                 
         else
             newProps.onChange  = (e) =>
