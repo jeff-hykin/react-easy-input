@@ -6,21 +6,12 @@ invalidModule   = require('./Invalid')
 get = invalidModule.get
 set = invalidModule.set
 
-# FIXMEs
-    # upgrade to smart component
-        # run the incomingFilter on mount to check initial validity
-    # unwrap the invalid class before handing it to outgoingFilter
-    # use setCustomValidity in the onChange that has an Invalid errMsg
-    # if onChange and linkTo are set, then wrap the existing onChange
-    # if onChange and incomingFilter are set, then wrap the existing onChange
-
-# TODO
+# TODO/Extra
     # add some props
         # required, invalidClass, validateImmediately(show red on empty required fields onload), validateOnblur (show red only after/not during field editing)
     # add more converters
         # numeric, integer, decimal, percent
         
-
 # EVENTUALLY
     # add masking, mask=[/[^@]+/,"@",/\d/,"."]
 
@@ -53,6 +44,7 @@ class Input extends React.Component
     
     constructor: (props) ->
         super(props)
+        this.hasCompletedTheInitialFilter = false
     
     render: ->
         props = this.props
@@ -65,6 +57,7 @@ class Input extends React.Component
         expectedProps.push("classAdd"       ); if props.classAdd       then classAdd       = props.classAdd       else classAdd       = ""
         expectedProps.push("incomingFilter" ); if props.incomingFilter then incomingFilter = props.incomingFilter else incomingFilter = null
         expectedProps.push("outgoingFilter" ); if props.outgoingFilter then outgoingFilter = props.outgoingFilter else outgoingFilter = null
+        expectedProps.push("value"          ); if props.value          then value          = props.value          else value          = null
         # create a mutable version of props
         newProps = {}
         for each in Object.keys(props)
@@ -81,20 +74,26 @@ class Input extends React.Component
         # FIXME, wrap the incomingFilter to make sure it always receives non-Invalid() values
         
         #
-        # retrieve value
+        # calculate value
         #
         if newProps.this and linkTo
             # retrieve the actual value from the component's state
             newProps.value = get(newProps.this.state, linkTo, "")
         
+        # Check the initial value
+        if incomingFilter and !this.hasCompletedTheInitialFilter
+            initialValue = newProps.value
+            newProps.value = incomingFilter(newProps.value)
+            this.hasCompletedTheInitialFilter = true
+            if initialValue != newProps.value
+                # if the initial value is different, call the onchange
+                if newProps.onChange
+                    newProps.onChange({target:{value:newProps.value}})
         
         # preserve the validity/un-validityness
         valueIsInvalid = isInvalid newProps.value #FIXME, there could be a better solution than this
         
-        
-        #
-        # convert the value (if needed)
-        #
+        # always run outgoing filters
         if outgoingFilter then newProps.value = outgoingFilter(newProps.value)
         # always convert null values to "" (otherwise react will complain)
         if newProps.value is null or newProps.value is undefined then newProps.value = ""
@@ -124,8 +123,16 @@ class Input extends React.Component
         else
             newProps.onChange  = (e) =>
                 e.persist() # react will destroy e if we don't tell it to persist
+                newValue = e.target.value
                 resetCursor(this)
-                props.onChange(e)
+                # if there is a converter function, then run the function before it returns to state
+                # for example convert "True" into the boolean: true,
+                # or convert the string "Jan 12 2017" to dateTime(1,12,2017)
+                if incomingFilter
+                    newValue = incomingFilter(newValue)
+                
+                props.onChange({target:{value:newProps.value}})
+                
         
         
         
