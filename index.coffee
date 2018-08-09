@@ -131,7 +131,7 @@ class Input extends React.Component
                 if incomingFilter
                     newValue = incomingFilter(newValue)
                 
-                props.onChange({target:{value:newProps.value}})
+                props.onChange({target:{value:newValue}})
                 
         
         
